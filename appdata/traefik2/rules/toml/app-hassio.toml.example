@@ -1,0 +1,15 @@
+[http.routers]
+  [http.routers.hassio-rtr]
+      entryPoints = ["https"]
+      rule = "HostHeader(`hassio.example.com`)"
+      service = "hassio-svc"
+      middlewares = ["chain-no-auth"]
+      [http.routers.hassio-rtr.tls]
+        certresolver = "dns-cloudflare"
+
+[http.services]
+  [http.services.hassio-svc]
+    [http.services.hassio-svc.loadBalancer]
+      passHostHeader = true
+      [[http.services.hassio-svc.loadBalancer.servers]]
+        url = "http://HASSIO-IP:8123"  # or whatever your external host's IP:port is 

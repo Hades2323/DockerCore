@@ -1,0 +1,173 @@
+######## ENVIRONMENT ########
+
+
+######## THIS COMPOSE FILE ########
+# - VirtualPrivateServer (vps01) -  Debian 12
+# - Prefix/suffix "vps01" refers to the above host
+# - Docker version 24.0.7, build afdd53b
+# - Docker Compose version v2.21.0
+
+######## NETWORKS ########
+# You may customize the network subnets (10.x.x.0/24) below.
+networks:
+  default:
+    driver: bridge
+  socket_proxy:
+    name: socket_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.10.0/24
+  # t2_proxy:
+  #   name: t2_proxy
+  #   driver: bridge
+  #   ipam:
+  #     config:
+  #       - subnet: 10.30.10.0/24
+  t3_proxy:
+    name: t3_proxy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.30.10.0/24
+
+######## SECRETS ########
+secrets:
+  basic_auth_credentials:
+    file: $SECRETSDIR/basic_auth_credentials
+  cf_dns_api_token:
+    file: $SECRETSDIR/cf_dns_api_token
+  traefik_forward_auth:
+    file: $SECRETSDIR/traefik_forward_auth
+  mysql_root_password:
+    file: $SECRETSDIR/mysql_root_password
+  authelia_jwt_secret:
+    file: $SECRETSDIR/authelia_jwt_secret
+  authelia_session_secret:
+    file: $SECRETSDIR/authelia_session_secret
+  # authelia_storage_mysql_password:
+  #   file: $SECRETSDIR/authelia_storage_mysql_password
+  # authelia_notifier_smtp_password:
+  #   file: $SECRETSDIR/authelia_notifier_smtp_password
+  # authelia_duo_api_secret_key:
+  #   file: $SECRETSDIR/authelia_duo_api_secret_key
+  authelia_storage_encryption_key:
+    file: $SECRETSDIR/authelia_storage_encryption_key
+  guac_db_name:
+    file: $SECRETSDIR/guac_db_name
+  guac_mysql_user:
+    file: $SECRETSDIR/guac_mysql_user
+  guac_mysql_password:
+    file: $SECRETSDIR/guac_mysql_password
+
+include:
+  ######## SERVICES ########
+  # PREFIX - vps01
+  # HOSTNAME=vps01 - defined in .env
+
+  ################################
+  ######## CORE ########
+  ################################
+  #- compose/$HOSTNAME/traefik.yml
+  #- compose/$HOSTNAME/socket-proxy.yml
+  #- compose/$HOSTNAME/oauth.yml
+  #- compose/$HOSTNAME/authelia.yml
+  #- compose/$HOSTNAME/portainer.yml
+  #- compose/$HOSTNAME/dockge.yml
+
+  ################################
+  ######## DATABASES ########
+  ################################
+  #- compose/$HOSTNAME/prometheus.yml
+  #- compose/$HOSTNAME/mariadb.yml
+  #- compose/$HOSTNAME/influxdb.yml
+
+  ################################
+  ######## SECURITY ########
+  ################################
+  #- compose/$HOSTNAME/crowdsec.yml
+  #- compose/$HOSTNAME/traefik-bouncer.yml
+  
+  ################################
+  ######## FRONTEND ########
+  ################################
+  #- compose/$HOSTNAME/autoindex.yml
+  #- compose/$HOSTNAME/homepage.yml
+  #- compose/$HOSTNAME/phpmyadmin.yml
+  #- compose/$HOSTNAME/sitespeed.yml
+  #- compose/$HOSTNAME/whoami.yml
+  
+  ################################
+  ######## DOWNLOADERS ########
+  ################################
+  # - compose/$HOSTNAME/jdownloader.yml
+  #- compose/$HOSTNAME/qbittorrent.yml
+  #- compose/$HOSTNAME/sabnzbd.yml
+  
+  ################################
+  ######## PVRS ########
+  ################################
+  #- compose/$HOSTNAME/sonarr.yml
+  #- compose/$HOSTNAME/radarr.yml
+  # - compose/$HOSTNAME/lidarr.yml
+  
+  ################################
+  ######## MEDIA SERVERS ########
+  ################################
+  #- compose/$HOSTNAME/jellyfin.yml
+  # - compose/$HOSTNAME/airsonic-advanced.yml
+  # - compose/$HOSTNAME/plex.yml
+  # - compose/$HOSTNAME/tautulli.yml
+  # - compose/$HOSTNAME/overseerr.yml
+  # - compose/$HOSTNAME/plex-meta-manager.yml
+  # - compose/$HOSTNAME/plex-image-cleanup.yml
+
+  ################################
+  ######## COMPLEMENTARY APPS ########
+  ################################
+  #- compose/$HOSTNAME/prowlarr.yml
+  #- compose/$HOSTNAME/notifiarr.yml
+  # - compose/$HOSTNAME/bazarr.yml
+  # - compose/$HOSTNAME/picard.yml
+  
+  ################################
+  ######## MONITORING ########
+  ################################
+  #- compose/$HOSTNAME/grafana.yml
+  #- compose/$HOSTNAME/uptime-kuma.yml
+  #- compose/$HOSTNAME/dozzle.yml
+  #- compose/$HOSTNAME/scrutiny.yml
+  # - compose/$HOSTNAME/radarr-exporter.yml
+  # - compose/$HOSTNAME/sonarr-exporter.yml
+  # - compose/$HOSTNAME/lidarr-exporter.yml
+  # - compose/$HOSTNAME/prowlarr-exporter.yml
+  # - compose/$HOSTNAME/sabnzbd-exporter.yml
+  #- compose/$HOSTNAME/node-exporter.yml
+  
+  ################################
+  ######## ADMIN ########
+  ################################
+  #- compose/$HOSTNAME/guacamole.yml
+  # - compose/$HOSTNAME/kasm.yml
+  #- compose/$HOSTNAME/it-tools.yml
+  
+  ################################
+  ######## UTILITIES ########
+  ################################
+  #- compose/$HOSTNAME/firefox.yml
+  #- compose/$HOSTNAME/firefly.yml
+  # FILE MANAGEMENT
+  #- compose/$HOSTNAME/vscode.yml
+  #- compose/$HOSTNAME/makemkv.yml
+  #- compose/$HOSTNAME/mkvtoolnix.yml
+  
+  ################################
+  ######## NETWORK ########
+  ################################
+  #- compose/$HOSTNAME/gluetun.yml
+  
+  ################################
+  ######## MAINTENANCE ########
+  ################################
+  #- compose/$HOSTNAME/docker-gc.yml
+  #- compose/$HOSTNAME/deunhealth.yml

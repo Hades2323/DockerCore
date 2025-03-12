@@ -1,0 +1,11 @@
+/home/USER/docker/appdata/rclone/logs/*.log {
+    daily
+    rotate 7
+    notifempty
+    missingok
+    compress
+    delaycompress
+    su USER USER
+    create 0664 USER USER
+    size 20M
+}

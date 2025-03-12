@@ -1,0 +1,17 @@
+# https://github.com/mlocati/docker-php-extension-installer
+
+# https://www.php.net/ChangeLog-7.php
+FROM php:7.4-fpm
+
+# ADD https://raw.githubusercontent.com/mlocati/docker-php-extension-installer/master/install-php-extensions /usr/local/bin/
+ADD https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
+
+RUN chmod uga+x /usr/local/bin/install-php-extensions && sync && \
+    install-php-extensions gd mysqli pdo_mysql opcache imagick exif zip mcrypt pspell redis sockets ssh2 bcmath intl calendar
+
+# ADDED AUGUST 18, 2022 BECAUSE ERRORS IN PHP7 DOCKER LOGS TO INCREASE MAX_CHILDREN
+# https://serverfault.com/questions/884256/how-and-where-to-configure-pm-max-children-for-php-fpm-with-docker
+# SETUP PHP-FPM CONFIG SETTINGS (max_children / max_requests)
+RUN echo 'pm.max_children = 15' >> /usr/local/etc/php-fpm.d/zz-docker.conf && \
+    echo 'pm.max_requests = 500' >> /usr/local/etc/php-fpm.d/zz-docker.conf

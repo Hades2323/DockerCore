@@ -1,0 +1,16 @@
+http:
+  routers:
+    haos-rtr:
+      rule: "Host(`haos.{{env "DOMAINNAME_$HOSTNAME"}}`)" 
+      entryPoints:
+        - websecure
+      middlewares:
+        - chain-no-auth
+      service: haos-svc
+      tls:
+        certResolver: dns-cloudflare
+  services:
+    haos-svc:
+      loadBalancer:
+        servers:
+          - url: "http://10.100.10.123:8123"  # or whatever your external host's IP:port is 

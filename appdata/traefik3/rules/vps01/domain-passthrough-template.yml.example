@@ -1,0 +1,15 @@
+tcp:
+  routers:
+    synology-traefik-rtr:
+      entryPoints:
+        - websecure
+      # rule: "HostSNIRegexp(`example.com`) || HostSNIRegexp(`{subdomain:[a-z]+}.example.com`)"
+      rule: "HostSNIRegexp(`{{env "DOMAINNAME_00"}}`) || HostSNIRegexp(`{subdomain:[a-z]+}.{{env "DOMAINNAME_00"}}`)"
+      service: synology-traefik-svc
+      tls:
+        passthrough: true
+  services:
+    synology-traefik-svc:
+      loadBalancer:
+        servers:
+          - address: "10.30.10.253:443"
