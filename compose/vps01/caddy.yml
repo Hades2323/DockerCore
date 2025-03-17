@@ -33,4 +33,4 @@ services:
       - "traefik.http.routers.caddy-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
       # HTTP Services
       - "traefik.http.routers.caddy-rtr.service=caddy-svc"
-      - "traefik.http.services.caddy-svc.loadbalancer.server.port=44432" /bin/bash
+      - "traefik.http.services.caddy-svc.loadbalancer.server.port=44432"
