@@ -16,7 +16,7 @@ This document describes the steps to download and run the `FIRSTINSTALL.sh` scri
    Use the `wget` command to download the `FIRSTINSTALL.sh` script:
 
    ```bash
-   wget -O FIRSTINSTALL.sh https://raw.githubusercontent.com/Hades2323/docker_core/refs/heads/main/scripts/FIRSTINSTALL.sh
+   wget -O FIRSTINSTALL.sh https://raw.githubusercontent.com/Hades2323/DockerCore/refs/heads/main/scripts/FIRSTINSTALL.sh
    ```
 
 2. **Make the script executable**
