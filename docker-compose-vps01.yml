@@ -87,7 +87,19 @@ include:
   ################################
   #- compose/$HOSTNAME/crowdsec.yml
   #- compose/$HOSTNAME/traefik-bouncer.yml
+
+  ################################
+  ######## WEBSERVER ########
+  ################################
+  #- compose/$HOSTNAME/caddy.yml
+  #- compose/$HOSTNAME/php.yml
   
+  ################################
+  ######## OPERATING SYSTEMS ########
+  ################################
+  #- compose/$HOSTNAME/ubuntu.yml
+  
+
   ################################
   ######## FRONTEND ########
   ################################

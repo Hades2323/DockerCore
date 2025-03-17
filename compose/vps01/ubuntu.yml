@@ -1,0 +1,33 @@
+services:
+  # ubuntu - Linux Operating System
+  ubuntu:
+    image: ubuntu:latest
+    container_name: ubuntu
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    profiles: ["apps", "all"]
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - "2222:22"
+    #  - "80:80"
+    #  - "443:443"
+    #  - "443:443/udp"
+    volumes:
+      - $DOCKERDIR/appdata/ubuntu/data:/bin/bash
+    environment:
+      TZ: $TZ
+      PUID: $PUID
+      PGID: $PGID
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.ubuntu-rtr.entrypoints=websecure"
+      - "traefik.http.routers.ubuntu-rtr.rule=Host(`ubuntu.$DOMAINNAME_00`) || Host(`www.ubuntu.$DOMAINNAME_00`)"
+      # Middlewares
+      - "traefik.http.routers.ubuntu-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
+      # HTTP Services
+      - "traefik.http.routers.ubuntu-rtr.service=ubuntu-svc"
+      - "traefik.http.services.ubuntu-svc.loadbalancer.server.port=2222"

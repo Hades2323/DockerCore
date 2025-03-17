@@ -1,0 +1,36 @@
+services:
+  # Caddy - Webserver
+  caddy:
+    image: caddy/caddy:latest
+    container_name: caddy
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    profiles: ["apps", "all"]
+    networks:
+      - t3_proxy
+      - socket_proxy
+    # ports:
+    #  - "$CADDY_WEBSECURE:443" 
+      - "50802:80"
+      - "44432:443"
+      - "44432:443/udp"
+    volumes:
+      - $DOCKERDIR/appdata/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - $DOCKERDIR/appdata/caddy/site:/srv
+      - $DOCKERDIR/appdata/caddy/data:/data
+      - $DOCKERDIR/appdata/caddy/config:/config
+    environment:
+      TZ: $TZ
+      PUID: $PUID
+      PGID: $PGID
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.caddy-rtr.entrypoints=websecure"
+      - "traefik.http.routers.caddy-rtr.rule=Host(`caddy.$DOMAINNAME_00`) || Host(`www.caddy.$DOMAINNAME_00`)"
+      # Middlewares
+      - "traefik.http.routers.caddy-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
+      # HTTP Services
+      - "traefik.http.routers.caddy-rtr.service=caddy-svc"
+      - "traefik.http.services.caddy-svc.loadbalancer.server.port=44432" /bin/bash
