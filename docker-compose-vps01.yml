@@ -68,12 +68,12 @@ include:
   ################################
   ######## CORE ########
   ################################
-  #- compose/$HOSTNAME/traefik.yml
-  #- compose/$HOSTNAME/socket-proxy.yml
+  - compose/$HOSTNAME/traefik.yml
+  - compose/$HOSTNAME/socket-proxy.yml
   #- compose/$HOSTNAME/oauth.yml
   #- compose/$HOSTNAME/authelia.yml
-  #- compose/$HOSTNAME/portainer.yml
-  #- compose/$HOSTNAME/dockge.yml
+  - compose/$HOSTNAME/portainer.yml
+  - compose/$HOSTNAME/dockge.yml
 
   ################################
   ######## DATABASES ########
