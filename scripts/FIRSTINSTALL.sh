@@ -111,6 +111,8 @@ sudo setfacl -Rm g:docker:rwx /opt/docker/core
 
 sudo cp /opt/docker/core/docker-compose-vps01.yml /opt/docker/core/docker-compose-$(hostname).yml
 sudo cp -r /opt/docker/core/appdata/traefik3/rules/vps01/ /opt/docker/core/appdata/traefik3/rules/$(hostname)
+sudo cp -r /opt/docker/core/logs/vps01/ /opt/docker/core/logs/$(hostname)
+sudo chmod 600 /opt/docker/core/appdata/traefik3/acme/acme.json
 
 # Get the UID and GID of the 'apps' user and group
 APPS_UID=$(id -u apps)
@@ -137,6 +139,7 @@ echo -e "=======================================================================
 \n comment/uncomment docker-compose-$(hostname).yml 
 \n and set secrets files in /opt/docker/core/secrets
 \n
-\n execute sudo docker compose -f /opt/docker/core/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs up -d
+\n execute
+\n sudo docker compose -f /opt/docker/core/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs up -d
 \n=============================================================================================================================================================
 \n============================================================================================================================================================="
