@@ -137,6 +137,6 @@ echo -e "=======================================================================
 \n comment/uncomment docker-compose-$(hostname).yml 
 \n and set secrets files in /opt/docker/core/secrets
 \n
-\n execute sudo docker-compose -f /opt/docker/core/docker-compose-$(hostname).yml up -d
+\n execute sudo docker compose -f /opt/docker/core/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs up -d
 \n=============================================================================================================================================================
 \n============================================================================================================================================================="
