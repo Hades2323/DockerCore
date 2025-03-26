@@ -68,18 +68,19 @@ include:
   ################################
   ######## CORE ########
   ################################
-  - compose/$HOSTNAME/traefik.yml
   - compose/$HOSTNAME/socket-proxy.yml
+  - compose/$HOSTNAME/traefik.yml
+  #- compose/$HOSTNAME/tailscale.yml
   #- compose/$HOSTNAME/oauth.yml
   #- compose/$HOSTNAME/authelia.yml
-  - compose/$HOSTNAME/portainer.yml
-  - compose/$HOSTNAME/dockge.yml
+  #- compose/$HOSTNAME/portainer.yml
+  #- compose/$HOSTNAME/dockge.yml
 
   ################################
   ######## DATABASES ########
   ################################
   #- compose/$HOSTNAME/prometheus.yml
-  #- compose/$HOSTNAME/mariadb.yml
+  - compose/$HOSTNAME/mariadb.yml
   #- compose/$HOSTNAME/influxdb.yml
 
   ################################
@@ -104,7 +105,7 @@ include:
   ######## FRONTEND ########
   ################################
   #- compose/$HOSTNAME/autoindex.yml
-  #- compose/$HOSTNAME/homepage.yml
+  - compose/$HOSTNAME/homepage.yml
   #- compose/$HOSTNAME/phpmyadmin.yml
   #- compose/$HOSTNAME/sitespeed.yml
   #- compose/$HOSTNAME/whoami.yml
@@ -112,7 +113,7 @@ include:
   ################################
   ######## DOWNLOADERS ########
   ################################
-  # - compose/$HOSTNAME/jdownloader.yml
+  #- compose/$HOSTNAME/jdownloader.yml
   #- compose/$HOSTNAME/qbittorrent.yml
   #- compose/$HOSTNAME/sabnzbd.yml
   
@@ -121,51 +122,58 @@ include:
   ################################
   #- compose/$HOSTNAME/sonarr.yml
   #- compose/$HOSTNAME/radarr.yml
-  # - compose/$HOSTNAME/lidarr.yml
+  #- compose/$HOSTNAME/lidarr.yml
   
   ################################
   ######## MEDIA SERVERS ########
   ################################
   #- compose/$HOSTNAME/jellyfin.yml
-  # - compose/$HOSTNAME/airsonic-advanced.yml
-  # - compose/$HOSTNAME/plex.yml
-  # - compose/$HOSTNAME/tautulli.yml
-  # - compose/$HOSTNAME/overseerr.yml
-  # - compose/$HOSTNAME/plex-meta-manager.yml
-  # - compose/$HOSTNAME/plex-image-cleanup.yml
+  #- compose/$HOSTNAME/airsonic-advanced.yml
+  #- compose/$HOSTNAME/plex.yml
+  #- compose/$HOSTNAME/tautulli.yml
+  #- compose/$HOSTNAME/overseerr.yml
+  #- compose/$HOSTNAME/plex-meta-manager.yml
+  #- compose/$HOSTNAME/plex-image-cleanup.yml
+  #- compose/$HOSTNAME/jellyfin-vue.yml
 
   ################################
   ######## COMPLEMENTARY APPS ########
   ################################
   #- compose/$HOSTNAME/prowlarr.yml
   #- compose/$HOSTNAME/notifiarr.yml
-  # - compose/$HOSTNAME/bazarr.yml
-  # - compose/$HOSTNAME/picard.yml
+  #- compose/$HOSTNAME/bazarr.yml
+  #- compose/$HOSTNAME/picard.yml
+  #- compose/$HOSTNAME/recyclarr.yml
+  #- compose/$HOSTNAME/flaresolverr.yml
   
   ################################
   ######## MONITORING ########
   ################################
+  #- compose/$HOSTNAME/beszel-hub.yml
+  #- compose/$HOSTNAME/beszel-agent.yml
   #- compose/$HOSTNAME/grafana.yml
   #- compose/$HOSTNAME/uptime-kuma.yml
   #- compose/$HOSTNAME/dozzle.yml
   #- compose/$HOSTNAME/scrutiny.yml
-  # - compose/$HOSTNAME/radarr-exporter.yml
-  # - compose/$HOSTNAME/sonarr-exporter.yml
-  # - compose/$HOSTNAME/lidarr-exporter.yml
-  # - compose/$HOSTNAME/prowlarr-exporter.yml
-  # - compose/$HOSTNAME/sabnzbd-exporter.yml
+  #- compose/$HOSTNAME/radarr-exporter.yml
+  #- compose/$HOSTNAME/sonarr-exporter.yml
+  #- compose/$HOSTNAME/lidarr-exporter.yml
+  #- compose/$HOSTNAME/prowlarr-exporter.yml
+  #- compose/$HOSTNAME/sabnzbd-exporter.yml
   #- compose/$HOSTNAME/node-exporter.yml
+  #- compose/$HOSTNAME/checkmk.yml
   
   ################################
   ######## ADMIN ########
   ################################
   #- compose/$HOSTNAME/guacamole.yml
-  # - compose/$HOSTNAME/kasm.yml
-  #- compose/$HOSTNAME/it-tools.yml
-  
+  #- compose/$HOSTNAME/kasm.yml
+
   ################################
   ######## UTILITIES ########
   ################################
+  #- compose/$HOSTNAME/it-tools.yml
+  #- compose/$HOSTNAME/isponsorblocktv.yml
   #- compose/$HOSTNAME/firefox.yml
   #- compose/$HOSTNAME/firefly.yml
   # FILE MANAGEMENT
@@ -177,6 +185,7 @@ include:
   ######## NETWORK ########
   ################################
   #- compose/$HOSTNAME/gluetun.yml
+  #- compose/$HOSTNAME/unifi.yml
   
   ################################
   ######## MAINTENANCE ########

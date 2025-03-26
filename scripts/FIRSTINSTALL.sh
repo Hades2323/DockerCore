@@ -14,7 +14,7 @@ sudo apt upgrade -y
 
 #Install the Required Packages 
 #zip and unzip are for compression, net-tools is to check port usage and availability, htop provides a nice UI to see running processes, and ncdu helps visualize disk space usage.#
-sudo apt install -y ca-certificates curl gnupg lsb-release ntp htop zip unzip gnupg apt-transport-https ca-certificates net-tools ncdu apache2-utils git acl ufw
+sudo apt install -y ca-certificates curl gnupg lsb-release ntp htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ufw fail2ban
 
 #Perform Server Tweaks
 #A few system configuration tweaks to enhance the performance and handling of large list of files (e.g. Plex/Jellyfin metadata)
@@ -76,6 +76,7 @@ sudo sed -i 's/#Port 22/Port 55222/' /etc/ssh/sshd_config
 # Restart the SSH service to apply the changes
 sudo systemctl restart ssh
 
+
 # Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
@@ -88,7 +89,7 @@ sudo systemctl start docker
 sudo mkdir -p /opt/docker/core
 
 # Clone the repository into the specified folder
-sudo git clone https://github.com/Hades2323/DockerCore.git /opt/docker/core
+sudo git clone https://github.com/Hades2323/docker_core.git /opt/docker/core
 
 # Set the ownership of the cloned repository to the 'apps' user
 sudo chown -R apps:apps /opt/docker/core
@@ -123,12 +124,34 @@ sudo sed -i "s/^PGID=.*/PGID=$APPS_GID/" /opt/docker/core/.env
 # Insert the hostname into the .env file
 sudo sed -i "s/^HOSTNAME=.*/HOSTNAME=$(hostname)/" /opt/docker/core/.env
 
+
+#######################################
+########## Secure SSH Access ##########
+#######################################
+# Fail2ban is a service that automatically blocks IP addresses that have too many failed login attempts
+sudo ln /opt/docker/core/appdata/fail2ban/jail.local /etc/fail2ban/jail.local
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+
+
 # change user to apps
 sudo su - apps
 
 # Create external apps mount folders 
 sudo mkdir -p /mnt/apps /mnt/multimedia /mnt/download /mnt/config /mnt/backup /mnt/log /mnt/books /mnt/fotovideo
 
+# Create the secret for traefik basic auth
+echo -e "Create user and password for traefik basic auth: "
+read -p "Enter username: " HTTP_USERNAME
+read -sp "Enter password: " HTTP_PASSWORD
+echo
+sudo htpasswd -cBb /opt/docker/core/secrets/basic_auth_credentials "$HTTP_USERNAME" "$HTTP_PASSWORD"
+
+# Create the secret for root mariadb user
+echo -e "Create root mariadb user password: "
+read -sp "Enter password: " MARIADB_ROOT_PASSWORD
+echo
+echo "$MARIADB_ROOT_PASSWORD" | sudo tee /opt/docker/core/secrets/mysql_root_password
 
 echo -e "=============================================================================================================================================================
 \n=============================================================================================================================================================

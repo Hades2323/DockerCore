@@ -1,5 +1,5 @@
+# Prometheus - Database for sensor data
 services:
-  # Prometheus - Database for sensor data
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
@@ -9,7 +9,7 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["dbs", "all"]
+    #profiles: ["dbs", "all"]
     ports:
       - "9090:9090"
     volumes:

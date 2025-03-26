@@ -1,0 +1,31 @@
+# https://tailscale.com/kb/1282/docker
+
+
+services:
+  tailscale:
+    image: tailscale/tailscale:latest
+    container_name: tailscale
+    restart: unless-stopped
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - net_admin
+    volumes:
+      - $DOCKERDIR/appdata/tailscale/state:/var/lib/tailscale
+      - $DOCKERDIR/appdata/tailscale/config:/config
+    environment:
+      - TS_AUTHKEY=$TS_AUTHKEY
+      - TS_STATE_DIR=$TS_STATE_DIR
+      #- TS_ACCEPT_DNS=$TS_ACCEPT_DNS
+      #- TS_AUTH_ONCE=$TS_AUTH_ONCE
+      #- TS_DEST_IP=$TS_DEST_IP
+      #- TS_KUBE_SECRET=$TS_KUBE_SECRET
+      - TS_HOSTNAME=$TS_HOSTNAME
+      #- TS_OUTBOUND_HTTP_PROXY_LISTEN=$TS_OUTBOUND_HTTP_PROXY_LISTEN
+      #- TS_ROUTES=$TS_ROUTES
+      #- TS_SOCKET=$TS_SOCKET
+      #- TS_SOCKS5_SERVER=$TS_SOCKS5_SERVER
+      - TS_USERSPACE=$TS_USERSPACE
+      #- TS_EXTRA_ARGS=$TS_EXTRA_ARGS
+      #- TS_TAILSCALED_EXTRA_ARGS=$TS_TAILSCALED_EXTRA_ARGS
+

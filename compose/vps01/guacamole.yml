@@ -7,7 +7,7 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["apps", "all"]
+    #profiles: ["apps", "all"]
     networks:
       - t3_proxy
       - default
@@ -43,4 +43,4 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["apps", "all"]
+    #profiles: ["apps", "all"]

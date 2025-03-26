@@ -12,7 +12,7 @@ services:
       - NET_ADMIN
       - SYS_ADMIN
     restart: unless-stopped
-    profiles: ["apps", "all"]
+    #profiles: ["apps", "all"]
     networks:
       - t3_proxy
     ports:

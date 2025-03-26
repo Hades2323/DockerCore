@@ -6,7 +6,7 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: "unless-stopped"
-    profiles: ["all", "downloads"]
+    #profiles: ["all", "downloads"]
     networks:
       - t3_proxy
     ports:

@@ -1,0 +1,23 @@
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel-hub
+    restart: unless-stopped
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - 8090:8090
+    volumes:
+      - $DOCKERDIR/appdata/beszel/data:/beszel_data
+      - $DOCKERDIR/appdata/beszel/socket:/beszel_socket
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.beszel-rtr.entrypoints=websecure"
+      - "traefik.http.routers.beszel-rtr.rule=Host(`beszel.$DOMAINNAME_00`)"
+      # Middlewares
+      - "traefik.http.routers.beszel-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
+      # HTTP Services
+      - "traefik.http.routers.beszel-rtr.service=beszel-svc"
+      - "traefik.http.services.beszel-svc.loadbalancer.server.port=8090"

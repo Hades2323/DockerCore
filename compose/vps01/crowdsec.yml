@@ -6,14 +6,14 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["core", "all"]
+    #profiles: ["core", "all"]
     ports:
       - "8080:8080"
       - "$ZEROTIER_IP_CLOUDSERVER:6060:6060" # Exposing metrics via Zerotier IP
     environment:
       COLLECTIONS: "crowdsecurity/traefik crowdsecurity/http-cve crowdsecurity/whitelist-good-actors crowdsecurity/iptables crowdsecurity/linux fulljackz/proxmox"
       GID: "${GID-1000}"
-      CUSTOM_HOSTNAME: home-server
+      CUSTOM_HOSTNAME: $HOSTNAME
       DISABLE_LOCAL_API: "true" # Only after successfully registering and validating remote agent below.
       # For the following, check local_api_credentials.yaml after cscli lapi register (secondary machine) and cscli machine validate (on primary machine)
       AGENT_USERNAME: $CROWDSEC_AGENT_USERNAME 

@@ -6,7 +6,7 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: "no"
-    profiles: ["media", "arrs", "all"]
+    #profiles: ["media", "arrs", "all"]
     networks:
       - t3_proxy
     ports:

@@ -8,7 +8,7 @@ services:
       - no-new-privileges:true
       - seccomp:unconfined # October 15, 2020 https://github.com/jlesage/docker-firefox/blob/master/README.md#allowing-the-membarrier-system-call
     restart: unless-stopped
-    profiles: ["apps", "all"]
+    #profiles: ["apps", "all"]
     networks:
       - t3_proxy
     # ports:

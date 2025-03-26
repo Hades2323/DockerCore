@@ -8,7 +8,7 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: "no"
-    profiles: ["media", "all"]
+    #profiles: ["media", "all"]
     user: $PUID:$PGID
     devices:
       - /dev/dri:/dev/dri # for harware transcoding
@@ -21,7 +21,7 @@ services:
     volumes:
       - $DOCKERDIR/appdata/jellyfin:/config
       - $MEDIA_DIR:/data/multimedia
-      - $DOWNLOADS_DIR:/data/downloads
+      - $DOWNLOADSDIR:/data/downloads
       - /dev/shm:/data/transcode # Offload transcoding to RAM if you have enough RAM
     labels:
       - "traefik.enable=true"

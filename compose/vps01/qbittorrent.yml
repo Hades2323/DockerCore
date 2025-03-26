@@ -7,13 +7,13 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["apps", "downloads", "all"]
+    #profiles: ["apps", "downloads", "all"]
     network_mode: "service:gluetun"
     # ports:
     #   - "8081:8080" # Explosed via gluetun. 8081 because crowdsec is using port 8080
     volumes:
       - $DOCKERDIR/appdata/qbittorrent:/config
-      - $DOWNLOADSDIR:/data/downloads # Ensure that downloads folder is set to /data/downloads in qBittorrent
+      - $TORRENTDOWNLOADDIR:/data/downloads # Ensure that downloads folder is set to /data/downloads in qBittorrent
     environment:
       TZ: $TZ
       PUID: $PUID

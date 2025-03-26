@@ -6,11 +6,11 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["core", "all"]
+    #profiles: ["core", "all"]
     networks:
       socket_proxy:
         ipv4_address: 10.10.10.254 # You can specify a static IP
-    privileged: true # true for VM. False for unprivileged LXC container.
+    # privileged: true # true for VM. False for unprivileged LXC container.
     ports:
     #  - "$ZEROTIER_IP_CLOUDSERVER:2375:2375" # Port 2375 should only ever get exposed to the internal network. When possible use this line.
     # I use the next line instead, as I want portainer to manage multiple docker endpoints within my home network.

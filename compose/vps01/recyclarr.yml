@@ -1,0 +1,17 @@
+services:
+  # recyclarr - 
+  recyclarr:
+    image: ghcr.io/recyclarr/recyclarr
+    container_name: recyclarr
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    #profiles: ["apps", "all"]
+    networks:
+      - t3_proxy
+    volumes:
+      - $DOCKERDIR/appdata/recyclarr:/config
+    user: $PUID:$PGID
+    environment:
+      TZ: $TZ
+

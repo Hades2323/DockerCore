@@ -1,0 +1,29 @@
+services:
+  # jellyfin-vue - Jellyfin Vue
+  jellyfin-vue:
+    image: ghcr.io/jellyfin/jellyfin-vue
+    container_name: jellyfin-vue
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    #profiles: ["apps", "all"]
+    networks:
+      - t3_proxy
+    ports:
+      - 38580:80
+    volumes:
+      #- $DOCKERDIR/appdata/jellyfin-vue:/data
+    environment:
+      USER_ID: $PUID
+      GROUP_ID: $PGID
+      TZ: $TZ
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.jellyfin-vue-rtr.entrypoints=websecure"
+      - "traefik.http.routers.jellyfin-vue-rtr.rule=Host(`jdown.$DOMAINNAME_00`)"
+      # Middlewares
+      - "traefik.http.routers.jellyfin-vue-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
+      # HTTP Services
+      - "traefik.http.routers.jellyfin-vue-rtr.service=jellyfin-vue-svc"
+      - "traefik.http.services.jellyfin-vue-svc.loadbalancer.server.port=38580"

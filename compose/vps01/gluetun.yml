@@ -8,7 +8,7 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["core", "all"]
+    #profiles: ["core", "all"]
     networks:
       - t3_proxy
     cap_add:
@@ -25,11 +25,11 @@ services:
     environment:
       TZ: $TZ
       # Wireguard
-      #VPN_SERVICE_PROVIDER: surfshark
-      #VPN_TYPE: wireguard
-      #WIREGUARD_PRIVATE_KEY: $SURFSHARK_WG_PRIVATE_KEY
-      #WIREGUARD_ADDRESSES: 10.14.0.2/16
-      #SERVER_COUNTRIES: Netherlands
+      VPN_SERVICE_PROVIDER: surfshark
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: $WG_PRIVATE_KEY
+      WIREGUARD_ADDRESSES: $WG_ADDRESSES
+      SERVER_COUNTRIES: $WG_SERVER_COUNTRIES
       # # OpenVPN
       # VPN_SERVICE_PROVIDER: nordvpn
       # VPN_TYPE: openvpn

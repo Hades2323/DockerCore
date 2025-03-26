@@ -6,14 +6,14 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["apps", "all"]
+    #profiles: ["apps", "all"]
     networks:
       - t3_proxy
     labels:
       - "traefik.enable=true"
       # HTTP Routers
       - "traefik.http.routers.it-tools-rtr.entrypoints=websecure"
-      - "traefik.http.routers.it-tools-rtr.rule=Host(`tools.$DOMAINNAME_00`)"
+      - "traefik.http.routers.it-tools-rtr.rule=Host(`it-tools.$DOMAINNAME_00`)"
       # Middlewares
       - "traefik.http.routers.it-tools-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
       # HTTP Services

@@ -1,0 +1,32 @@
+services:
+  # checkmk - Jellyfin Vue
+  checkmk:
+    image: ghcr.io/jellyfin/checkmk
+    container_name: checkmk
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    #profiles: ["apps", "all"]
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - 8080:5000
+      - 8000:8000
+    volumes:
+      - $DOCKERDIR/appdata/checkmk/monitoring:/omd/sites
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      USER_ID: $PUID
+      GROUP_ID: $PGID
+      TZ: $TZ
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.checkmk-rtr.entrypoints=websecure"
+      - "traefik.http.routers.checkmk-rtr.rule=Host(`jdown.$DOMAINNAME_00`)"
+      # Middlewares
+      - "traefik.http.routers.checkmk-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
+      # HTTP Services
+      - "traefik.http.routers.checkmk-rtr.service=checkmk-svc"
+      - "traefik.http.services.checkmk-svc.loadbalancer.server.port=8080"

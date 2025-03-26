@@ -9,8 +9,8 @@ After=network-online.target
 Type=notify
 ExecStart=/usr/bin/rclone mount ds918: /media/rclone/ds918 \
 #--read-only \
---config /home/apps/docker/appdata/rclone/rclone.conf \
---log-file=/home/apps/docker/logs/hs/rclone-ds918.log \
+--config /opt/docker/core/appdata/rclone/rclone.conf \
+--log-file=/opt/docker/core/logs/hs/rclone-ds918.log \
 --log-level NOTICE \
 --allow-other \
 --no-modtime \

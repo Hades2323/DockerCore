@@ -9,7 +9,7 @@ services:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    profiles: ["dbs", "all"]
+    #profiles: ["dbs", "all"]
     ports:
       - "8086:8086"
     volumes:

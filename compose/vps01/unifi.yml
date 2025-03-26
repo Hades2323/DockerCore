@@ -1,0 +1,29 @@
+services:
+  unifi:
+    image: jacobalberty/unifi
+    container_name: unifi
+    security_opt:
+      - no-new-privileges:true
+    restart: "no"
+    #profiles: ["media", "arrs", "all"]
+    networks:
+      - t3_proxy
+    ports:
+      - 8080:8080
+      - 8443:8443
+      - 3478:3478/udp
+    volumes:
+      - $DOCKERDIR/appdata/unifi:/unifi
+    user: $PUID:$PGID
+    environment:
+      TZ: $TZ
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.unifi-rtr.entrypoints=websecure"
+      - "traefik.http.routers.unifi-rtr.rule=Host(`unifi.$DOMAINNAME_00`)"
+      # Middlewares
+      - "traefik.http.routers.unifi-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
+      # HTTP Services
+      - "traefik.http.routers.unifi-rtr.service=unifi-svc"
+      - "traefik.http.services.unifi-svc.loadbalancer.server.port=8443"
