@@ -113,6 +113,7 @@ sudo setfacl -Rm g:docker:rwx /opt/docker/core
 sudo cp /opt/docker/core/docker-compose-vps01.yml /opt/docker/core/docker-compose-$(hostname).yml
 sudo cp -r /opt/docker/core/appdata/traefik3/rules/vps01/ /opt/docker/core/appdata/traefik3/rules/$(hostname)
 sudo cp -r /opt/docker/core/logs/vps01/ /opt/docker/core/logs/$(hostname)
+sudo cp -r /opt/docker/core/compose/vps01/ /opt/docker/core/compose/$(hostname)
 sudo chmod 600 /opt/docker/core/appdata/traefik3/acme/acme.json
 
 # Get the UID and GID of the 'apps' user and group
