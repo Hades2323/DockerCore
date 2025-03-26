@@ -89,7 +89,7 @@ sudo systemctl start docker
 sudo mkdir -p /opt/docker/core
 
 # Clone the repository into the specified folder
-sudo git clone https://github.com/Hades2323/dockercore.git /opt/docker/core
+sudo git clone https://github.com/Hades2323/DockerCore.git /opt/docker/core
 
 # Set the ownership of the cloned repository to the 'apps' user
 sudo chown -R apps:apps /opt/docker/core
