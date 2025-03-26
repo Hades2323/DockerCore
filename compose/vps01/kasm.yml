@@ -39,4 +39,3 @@ services:
       # HTTP Services
       - "traefik.http.routers.kasm-rtr.service=kasm-svc"
       - "traefik.http.services.kasm-svc.loadbalancer.server.port=3000"
-

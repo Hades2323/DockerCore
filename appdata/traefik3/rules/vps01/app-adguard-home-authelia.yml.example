@@ -15,4 +15,3 @@ http:
       loadBalancer:
         servers:
           - url: "http://ADGUARD-CLOUD-SERVER-IP:80"
-

@@ -7,4 +7,3 @@ http:
           - middlewares-secure-headers
           - middlewares-oauth-external
           - middlewares-compress
-
