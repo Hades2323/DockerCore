@@ -1,7 +1,7 @@
 http:
   routers:
     haos-rtr:
-      rule: "Host(`haos.{{env "DOMAINNAME_$HOSTNAME"}}`)" 
+      rule: "Host(`haos.{{env "DOMAINNAME_$HOSTNAME"}}`)"
       entryPoints:
         - websecure
       middlewares:
@@ -13,4 +13,4 @@ http:
     haos-svc:
       loadBalancer:
         servers:
-          - url: "http://192.168.1.123:8123"  # or whatever your external host's IP:port is 
+          - url: "http://192.168.1.123:8123"  # or whatever your external host's IP:port is

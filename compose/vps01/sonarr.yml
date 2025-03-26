@@ -15,7 +15,7 @@ services:
     volumes:
       - $DOCKERDIR/appdata/sonarr:/config
       - $MEDIA_DIR:/data/multimedia
-      - $DOWNLOADSDIR:/data/downloads 
+      - $DOWNLOADSDIR:/data/downloads
       - "/etc/localtime:/etc/localtime:ro"
     environment:
       TZ: $TZ

@@ -5,8 +5,8 @@
 
 # SOURCE ENVIRONMENTAL VARIABLES FOR BASH_ALIASES
 if [[ -f "$HOME/docker/shared/config/bash_aliases.env" ]]; then
-  source $HOME/docker/shared/config/bash_aliases.env 
-fi 
+  source $HOME/docker/shared/config/bash_aliases.env
+fi
 
 # CHANGE TO CUSTOM BASH PROMPT
 username="apps" # or use $USER
@@ -19,7 +19,7 @@ alias drm='sudo docker rm $(sudo docker ps -a -q)' # usage: drm container_name
 alias dprunevol='sudo docker volume prune' # remove unused volumes
 alias dprunesys='sudo docker system prune -a' # remove unsed docker data
 alias ddelimages='sudo docker rmi $(sudo docker images -q)' # remove unused docker images
-alias derase='dstopcont ; drmcont ; ddelimages ; dvolprune ; dsysprune' # WARNING: removes everything! 
+alias derase='dstopcont ; drmcont ; ddelimages ; dvolprune ; dsysprune' # WARNING: removes everything!
 alias dprune='ddelimages ; dprunevol ; dprunesys' # remove unused data, volumes, and images (perfect for safe clean up)
 alias dexec='sudo docker exec -ti' # usage: dexec container_name (to access container terminal)
 alias dps='sudo docker ps -a' # running docker processes
@@ -32,7 +32,7 @@ alias dips="sudo docker ps -q | xargs -n 1 sudo docker inspect -f '{{.Name}}%tab
 alias dp600='sudo chown -R root:root $HOME/docker/secrets ; sudo chmod -R 600 $HOME/docker/secrets ; sudo chown -R root:root $HOME/docker/.env ; sudo chmod -R 600 $HOME/docker/.env' # re-lock permissions
 alias dp777='sudo chown -R $USER:$USER $HOME/docker/secrets ; sudo chmod -R 777 $HOME/docker/secrets ; sudo chown -R $USER:$USER $HOME/docker/.env ; sudo chmod -R 777 $HOME/docker/.env' # open permissions for editing
 
-# DOCKER COMPOSE TRAEFIK 2 - All docker-compose commands start with "dc" 
+# DOCKER COMPOSE TRAEFIK 2 - All docker-compose commands start with "dc"
 case $HOSTNAME in
     ds918) # synology at this point uses an old version of docker. Therefore, 'docker-compose' instead of 'docker compose'
       alias dcrun='sudo docker-compose -f $HOME/docker/docker-compose-$HOSTNAME.yml' # /volume1/docker symlinked to /var/services/homes/user/docker
@@ -254,7 +254,7 @@ alias showlistening='lsof -i -n | egrep "COMMAND|LISTEN"'
 alias ping='ping -c 5'
 alias ipe='curl ipinfo.io/ip' # external ip
 alias ipi='ipconfig getifaddr en0' # internal ip
-alias header='curl -I' # get web server headers 
+alias header='curl -I' # get web server headers
 
 # SYNOLOGY DSM COMMANDS
 alias servicelist='sudo synoservicecfg --list' # does not work in DSM 7

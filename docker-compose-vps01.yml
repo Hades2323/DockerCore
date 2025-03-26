@@ -94,12 +94,12 @@ include:
   ################################
   #- compose/$HOSTNAME/caddy.yml
   #- compose/$HOSTNAME/php.yml
-  
+
   ################################
   ######## OPERATING SYSTEMS ########
   ################################
   #- compose/$HOSTNAME/ubuntu.yml
-  
+
 
   ################################
   ######## FRONTEND ########
@@ -109,21 +109,21 @@ include:
   #- compose/$HOSTNAME/phpmyadmin.yml
   #- compose/$HOSTNAME/sitespeed.yml
   #- compose/$HOSTNAME/whoami.yml
-  
+
   ################################
   ######## DOWNLOADERS ########
   ################################
   #- compose/$HOSTNAME/jdownloader.yml
   #- compose/$HOSTNAME/qbittorrent.yml
   #- compose/$HOSTNAME/sabnzbd.yml
-  
+
   ################################
   ######## PVRS ########
   ################################
   #- compose/$HOSTNAME/sonarr.yml
   #- compose/$HOSTNAME/radarr.yml
   #- compose/$HOSTNAME/lidarr.yml
-  
+
   ################################
   ######## MEDIA SERVERS ########
   ################################
@@ -145,7 +145,7 @@ include:
   #- compose/$HOSTNAME/picard.yml
   #- compose/$HOSTNAME/recyclarr.yml
   #- compose/$HOSTNAME/flaresolverr.yml
-  
+
   ################################
   ######## MONITORING ########
   ################################
@@ -162,7 +162,7 @@ include:
   #- compose/$HOSTNAME/sabnzbd-exporter.yml
   #- compose/$HOSTNAME/node-exporter.yml
   #- compose/$HOSTNAME/checkmk.yml
-  
+
   ################################
   ######## ADMIN ########
   ################################
@@ -180,13 +180,13 @@ include:
   #- compose/$HOSTNAME/vscode.yml
   #- compose/$HOSTNAME/makemkv.yml
   #- compose/$HOSTNAME/mkvtoolnix.yml
-  
+
   ################################
   ######## NETWORK ########
   ################################
   #- compose/$HOSTNAME/gluetun.yml
   #- compose/$HOSTNAME/unifi.yml
-  
+
   ################################
   ######## MAINTENANCE ########
   ################################

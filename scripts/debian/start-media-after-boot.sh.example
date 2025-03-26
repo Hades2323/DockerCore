@@ -1,5 +1,5 @@
 #!/bin/bash
-# All containers (profile "media") that access rclone/MergerFS mounts set to NOT restart automatically at boot time. 
+# All containers (profile "media") that access rclone/MergerFS mounts set to NOT restart automatically at boot time.
 # This is because, rclone can take a few seconds/minutes to mount remote drives.
 # This script checks the required mounts every 5 seconds and as soon as required drives are mounted, it starts the "media" containers.
 

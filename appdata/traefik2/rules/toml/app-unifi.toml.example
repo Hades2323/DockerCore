@@ -11,4 +11,4 @@
     [http.services.unifi-svc.loadBalancer]
       passHostHeader = true
       [[http.services.unifi-svc.loadBalancer.servers]]
-        "https://192.168.5.254:8443" # or whatever your external host's IP:port is 
+        "https://192.168.5.254:8443" # or whatever your external host's IP:port is

@@ -16,7 +16,7 @@
 #      frameDeny = true #overwritten by customFrameOptionsValue
   ### We will modify this value for Nextcloud to remove the X-Frame-Options error:
       customFrameOptionsValue = "SAMEORIGIN" #CSP takes care of this but may be needed for organizr.
-      contentTypeNosniff = true 
+      contentTypeNosniff = true
       browserXssFilter = true
 #      sslForceHost = true # add sslHost to all of the services
 #      sslHost = "example.com"
@@ -27,7 +27,7 @@
       # Line below, featurePolicy, was deprecated in v2.5.x in favor permissionPolicy
       # featurePolicy = "camera 'none'; geolocation 'none'; microphone 'none'; payment 'none'; usb 'none'; vr 'none';"
       permissionsPolicy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=()"
-  ### Change the middleware name here as well  
+  ### Change the middleware name here as well
       [http.middlewares.nextcloud-middlewares-secure-headers.headers.customResponseHeaders]
     ### We just need to set this to none
         X-Robots-Tag = "none"

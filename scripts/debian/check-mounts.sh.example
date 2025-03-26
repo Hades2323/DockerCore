@@ -1,5 +1,5 @@
 #!/bin/bash
-# This script checks for all required drive mounts, GDrive token validity, and rclone/mergerfs service status. If any issues are found, it shuts down any containers (media-service.txt) dependent on these mounted drives to avoid any data issues and sends an email notification. 
+# This script checks for all required drive mounts, GDrive token validity, and rclone/mergerfs service status. If any issues are found, it shuts down any containers (media-service.txt) dependent on these mounted drives to avoid any data issues and sends an email notification.
 # A mail transfer agent such as nullmailer, ssmtp, or postfix must be configured correctly for emails to work
 
 # CHECKING FOR DRIVE MOUNTS
@@ -16,7 +16,7 @@ notmounted=""
 if mount | grep ${rclone_drive} > /dev/null; then
 	mounted=$((mounted+1))
 #	echo -e ${rclone_drive}' mounted.'
-else 
+else
 #	echo ${rclone_drive}' not mounted.'
 	notmounted="${notmounted} ${rclone_drive}\n"
 fi
@@ -24,7 +24,7 @@ fi
 if mount | grep ${rclone_crypt} > /dev/null; then
 	mounted=$((mounted+1))
 #	echo -e ${rclone_crypt}' mounted.'
-else 
+else
 #	echo -e ${rclone_crypt}' not mounted.'
 	notmounted="${notmounted} ${rclone_crypt}\n"
 fi
@@ -32,7 +32,7 @@ fi
 if mount | grep ${hdd1} > /dev/null; then
 	mounted=$((mounted+1))
 #	echo -e ${hdd1}' mounted.'
-else 
+else
 #	echo -e ${hdd1}' not mounted.'
 	notmounted="${notmounted} ${hdd1}\n"
 fi
@@ -40,7 +40,7 @@ fi
 if mount | grep ${merge_media} > /dev/null; then
 	mounted=$((mounted+1))
 #	echo -e ${merge_media}' mounted.'
-else 
+else
 #	echo -e ${merge_media}' not mounted.'
 	notmounted="${notmounted} ${merge_media}\n"
 fi

@@ -14,7 +14,7 @@ services:
       - default
     network_mode: host
     volumes:
-      - $DOCKERDIR/appdata/beszel/socket:/beszel_socket 
+      - $DOCKERDIR/appdata/beszel/socket:/beszel_socket
       - /var/run/docker.sock:/var/run/docker.sock:ro
       ######## monitoring extra folders - Mount a folder from the target filesystem in the container's /extra-filesystems directory
       #- /mnt/multimedia/.beszel:/extra-filesystems/multimedia:ro

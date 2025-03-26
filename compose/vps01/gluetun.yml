@@ -34,7 +34,7 @@ services:
       # VPN_SERVICE_PROVIDER: nordvpn
       # VPN_TYPE: openvpn
       # OPENVPN_USER: $NORDVPN_USERNAME
-      # OPENVPN_PASSWORD: $NORDVPN_PASSWORD 
+      # OPENVPN_PASSWORD: $NORDVPN_PASSWORD
     labels:
       - "traefik.enable=true"
       # HTTP Routers

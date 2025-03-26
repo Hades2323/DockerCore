@@ -12,7 +12,7 @@ sudo adduser apps sudo
 sudo apt update
 sudo apt upgrade -y
 
-#Install the Required Packages 
+#Install the Required Packages
 #zip and unzip are for compression, net-tools is to check port usage and availability, htop provides a nice UI to see running processes, and ncdu helps visualize disk space usage.#
 sudo apt install -y ca-certificates curl gnupg lsb-release htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ufw fail2ban #ntp
 
@@ -138,7 +138,7 @@ sudo systemctl start fail2ban
 # change user to apps
 sudo su - apps
 
-# Create external apps mount folders 
+# Create external apps mount folders
 sudo mkdir -p /mnt/apps /mnt/multimedia /mnt/download /mnt/config /mnt/backup /mnt/log /mnt/books /mnt/fotovideo
 
 # Create the secret for traefik basic auth
@@ -157,10 +157,10 @@ echo "$MARIADB_ROOT_PASSWORD" | sudo tee /opt/docker/core/secrets/mysql_root_pas
 echo -e "=============================================================================================================================================================
 \n=============================================================================================================================================================
 \n
-\n All done, 
-\n SSH port 55222, 
-\n set variables in .env file, 
-\n comment/uncomment docker-compose-$(hostname).yml 
+\n All done,
+\n SSH port 55222,
+\n set variables in .env file,
+\n comment/uncomment docker-compose-$(hostname).yml
 \n and set secrets files in /opt/docker/core/secrets
 \n
 \n execute

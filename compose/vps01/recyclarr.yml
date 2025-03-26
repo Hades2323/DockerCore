@@ -1,5 +1,5 @@
 services:
-  # recyclarr - 
+  # recyclarr -
   recyclarr:
     image: ghcr.io/recyclarr/recyclarr
     container_name: recyclarr

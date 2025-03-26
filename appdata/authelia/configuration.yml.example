@@ -93,7 +93,7 @@ regulation:
   max_retries: 3
   find_time: 10m
   ban_time: 12h
-  
+
 # https://www.authelia.com/configuration/storage/introduction/
 storage:
   # For local storage, uncomment lines below and comment out mysql. https://docs.authelia.com/configuration/storage/sqlite.html
@@ -109,7 +109,7 @@ storage:
   #   username: DBUSERNAME
   #   # Password can also be set using a secret: https://www.authelia.com/configuration/methods/secrets/#environment-variables
   #   # password: DBPASSWORD
-  # encryption_key: 'a_very_important_secret' # Can also be set using a secret: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE 
+  # encryption_key: 'a_very_important_secret' # Can also be set using a secret: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
 
 # https://www.authelia.com/configuration/notifications/introduction/
 notifier:
@@ -120,7 +120,7 @@ notifier:
   # smtp:
   #   username: SMTP_USERNAME
   #   # This secret can also be set using secret: https://www.authelia.com/configuration/methods/secrets/#environment-variables
-  #   # password: SMTP_PASSWORD 
+  #   # password: SMTP_PASSWORD
   #   host: SMTP_HOST
   #   port: 587 #465
   #   sender: SENDER_EMAIL

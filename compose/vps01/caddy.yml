@@ -11,7 +11,7 @@ services:
       - t3_proxy
       - socket_proxy
     # ports:
-    #  - "$CADDY_WEBSECURE:443" 
+    #  - "$CADDY_WEBSECURE:443"
       - "50802:80"
       - "44432:443"
       - "44432:443/udp"
