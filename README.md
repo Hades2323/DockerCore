@@ -1,4 +1,4 @@
-# Use in a Debian-based distro
+# Use in a Debian-based distro like Debian :)
 
 1. **Set Keyboard Layout**
    ```bash
@@ -34,7 +34,9 @@ This document describes the steps to download and run the `FIRSTINSTALL.sh` scri
 4. **All-in-one command**
    ```bash
       wget -O FIRSTINSTALL.sh https://raw.githubusercontent.com/Hades2323/DockerCore/refs/heads/main/scripts/FIRSTINSTALL.sh && chmod +x FIRSTINSTALL.sh && bash FIRSTINSTALL.sh
-
+   ```
+   *in case a vps and/or image already sudoed*
+   ```bash
       sudo wget -O FIRSTINSTALL.sh https://raw.githubusercontent.com/Hades2323/DockerCore/refs/heads/main/scripts/FIRSTINSTALL.sh && sudo chmod +x FIRSTINSTALL.sh && sudo bash FIRSTINSTALL.sh
    
    ```
