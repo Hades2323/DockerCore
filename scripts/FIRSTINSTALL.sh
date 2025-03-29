@@ -135,9 +135,6 @@ sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
 
 
-# change user to apps
-sudo -u apps bash -c "
-
 # Create external apps mount folders
 sudo mkdir -p /mnt/apps /mnt/multimedia /mnt/download /mnt/config /mnt/backup /mnt/log /mnt/books /mnt/fotovideo
 
@@ -153,7 +150,6 @@ echo -e "Create root mariadb user password: "
 read -sp "Enter password: " MARIADB_ROOT_PASSWORD
 echo
 echo "$MARIADB_ROOT_PASSWORD" | sudo tee /opt/docker/core/secrets/mysql_root_password
-"
 
 echo -e "=============================================================================================================================================================
 \n=============================================================================================================================================================
@@ -168,3 +164,6 @@ echo -e "=======================================================================
 \n sudo docker compose -f /opt/docker/core/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs up -d
 \n=============================================================================================================================================================
 \n============================================================================================================================================================="
+
+# change user to apps
+sudo su - apps
