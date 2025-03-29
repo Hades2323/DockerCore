@@ -28,12 +28,12 @@ services:
       - /dev/shm:/data/transcode # Offload transcoding to RAM if you have enough RAM
     environment:
       TZ: $TZ
-      HOSTNAME: "zPlex"
+      HOSTNAME: "Plex"
       PLEX_CLAIM_FILE: /run/secrets/plex_claim
       PLEX_UID: $PUID
       PLEX_GID: $PGID
       ADVERTISE_IP: "http://$MEDIASERVER_IP:32400/,http://$TAILSCALE_IP:32400/,https://plex.$DOMAINNAME_00"
-      ALLOWED_NETWORKS: $LOCAL_IPS
+      ALLOWED_NETWORKS: $LOCAL_IPS,$TAILSCALE_IPS
     secrets:
       - plex_claim
     labels:

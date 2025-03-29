@@ -179,6 +179,12 @@ read -sp "Enter password: " MARIADB_ROOT_PASSWORD
 echo
 echo "$MARIADB_ROOT_PASSWORD" | sudo tee /opt/docker/core/secrets/mysql_root_password
 
+# Create the secret for vnc password
+echo -e "Create vnc password: "
+read -sp "Enter password: " VNC_PASSWORD
+echo
+echo "$VNC_PASSWORD" | sudo tee /opt/docker/core/secrets/vnc_password
+
 echo -e "=============================================================================================================================================================
 \n=============================================================================================================================================================
 \n

@@ -23,7 +23,7 @@ services:
       CLEAN_TMP_DIR: 1
       DISPLAY_WIDTH: 1600
       DISPLAY_HEIGHT: 960
-      # VNC_PASSWORD: $MKVTOOLNIX_VNC_PASSWD
+      # VNC_PASSWORD: /run/secrets/vnc_password
     labels:
       - "traefik.enable=true"
       # HTTP Routers

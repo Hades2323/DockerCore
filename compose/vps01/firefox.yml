@@ -26,7 +26,7 @@ services:
       CLEAN_TMP_DIR: 1
       DISPLAY_WIDTH: 1920
       DISPLAY_HEIGHT: 1080
-      VNC_PASSWD: $FIREFOX_VNC_PASSWD
+      VNC_PASSWD: /run/secrets/vnc_password
     labels:
       - "traefik.enable=true"
       # HTTP Routers

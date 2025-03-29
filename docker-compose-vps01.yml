@@ -10,8 +10,8 @@
 ######## NETWORKS ########
 # You may customize the network subnets (10.x.x.0/24) below.
 networks:
-  default:
-    driver: bridge
+  default: # Default network docker 172.17.0.0/16
+    driver: bridge 
   socket_proxy:
     name: socket_proxy
     driver: bridge
@@ -59,6 +59,8 @@ secrets:
     file: $SECRETSDIR/guac_mysql_user
   guac_mysql_password:
     file: $SECRETSDIR/guac_mysql_password
+  vnc_password:
+    file: $SECRETSDIR/vnc_password
 
 include:
   ######## SERVICES ########

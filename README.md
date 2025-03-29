@@ -8,6 +8,10 @@
 # Docker Core Stack Installation
 
 This document describes the steps to download and run the `FIRSTINSTALL.sh` script to set up your Docker Core Stack environment.
+Note:
+* Make sure you have the necessary permissions to run the commands.
+* The script install and configure firewall, fail2ban, Docker; clone the git repository and duplicate some files with the new hostname.
+* After running the script, follow the instructions to complete the setup before docker compose execution.
 
 ## Steps
 
@@ -41,12 +45,24 @@ This document describes the steps to download and run the `FIRSTINSTALL.sh` scri
    
    ```
 
-Note:
-Make sure you have the necessary permissions to run the commands with sudo.
-The script will configure the firewall, install Docker, and clone the Docker Core Stack repository.
-After running the script, follow the final instructions to complete the setup.
+### Environments and Secrets
+
+   ```bash
+      sudo nano /opt/docker/core/.env
+   ```
+* change and/or declare
+`
+  TZ=
+  DOMAINNAME_00= 
+  CLOUDFLARE_EMAIL=
+`
+
+   ```bash
+      sudo nano /opt/docker/core/secrets/cf_dns_api_token
+   ```
+* paste cloudflare api token (permissions: read zone, write dns)
 
 ### Docker compose "stack"
- ```bash
+  ```bash
     sudo docker compose -f /opt/docker/core/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs up -d
-```
+  ```
