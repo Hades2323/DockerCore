@@ -28,7 +28,13 @@ services:
       - "traefik.http.routers.picard-rtr.entrypoints=websecure"
       - "traefik.http.routers.picard-rtr.rule=Host(`picard.$DOMAINNAME_00`)"
       # Middlewares
-      - "traefik.http.routers.picard-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.picard-rtr.service=picard-svc"
       - "traefik.http.services.picard-svc.loadbalancer.server.port=5800"

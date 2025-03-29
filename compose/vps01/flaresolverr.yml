@@ -17,16 +17,22 @@ services:
       TZ: $TZ
       PUID: $PUID
       PGID: $PGID
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - LOG_HTML=${LOG_HTML:-false}
-      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      LOG_HTML: ${LOG_HTML:-false}
+      CAPTCHA_SOLVER: ${CAPTCHA_SOLVER:-none}
     labels:
       - "traefik.enable=true"
       # HTTP Routers
       - "traefik.http.routers.flaresolverr-rtr.entrypoints=websecure"
       - "traefik.http.routers.flaresolverr-rtr.rule=Host(`flaresolverr.$DOMAINNAME_00`)"
       # Middlewares
-      - "traefik.http.routers.flaresolverr-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.flaresolverr-rtr.service=flaresolverr-svc"
       - "traefik.http.services.flaresolverr-svc.loadbalancer.server.port=8191"

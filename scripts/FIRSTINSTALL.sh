@@ -14,7 +14,7 @@ sudo apt upgrade -y
 
 #Install the Required Packages
 #zip and unzip are for compression, net-tools is to check port usage and availability, htop provides a nice UI to see running processes, and ncdu helps visualize disk space usage.#
-sudo apt install -y ca-certificates curl gnupg lsb-release htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ufw fail2ban #ntp
+sudo apt install -y ca-certificates curl gnupg lsb-release htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ufw fail2ban ntp network-manager
 
 #Perform Server Tweaks
 #A few system configuration tweaks to enhance the performance and handling of large list of files (e.g. Plex/Jellyfin metadata)
@@ -50,6 +50,9 @@ echo "The hostname has been changed to: $(hostname)"
 sudo ufw default deny incoming
 # Allow all outgoing connections by default
 sudo ufw default allow outgoing
+# Allow all routed connections by default
+# This is necessary for Tailscale to work properly
+sudo ufw default allow routed
 # Allow connections from all private networks
 sudo ufw allow from 10.0.0.0/8
 sudo ufw allow from 172.16.0.0/12
@@ -61,6 +64,31 @@ sudo ufw allow 55222/tcp
 # Allow HTTP and HTTPS connections
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
+sudo ufw allow 443/udp
+# Allow Docker connections (if needed)
+#sudo ufw allow 2375/tcp
+# Allow connections to the Docker API (if needed)
+#sudo ufw allow 2376/tcp
+# Allow connections to the Docker Swarm API (if needed)
+#sudo ufw allow 7946/tcp
+# Allow connections to the Docker Overlay Network (if needed)
+#sudo ufw allow 4789/udp
+# Allow connections to the Docker Container Network (if needed)
+#sudo ufw allow 7946/udp
+# Allow connections to the DNS (if needed)
+sudo ufw allow 53/tcp
+# Allow connections to the Docker Registry (if needed)
+#sudo ufw allow 5000/tcp
+# Allow connections to the Docker Volume (if needed)
+#sudo ufw allow 8080/tcp
+# Allow connections to the Docker Network (if needed)
+#sudo ufw allow 8080/udp
+# Allow connections to the Docker Bridge Network (if needed)
+#sudo ufw allow 80/udp
+# Allow connections to the Docker Host Network (if needed)
+#sudo ufw allow 443/udp
+# Allow connections to the Docker Macvlan Network (if needed)
+#sudo ufw allow 80/tcp
 # Enable the firewall
 sudo ufw enable
 # Check the status of the firewall
