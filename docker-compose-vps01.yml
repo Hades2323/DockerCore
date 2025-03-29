@@ -74,6 +74,7 @@ include:
   ################################
   - compose/$HOSTNAME/socket-proxy.yml
   - compose/$HOSTNAME/traefik.yml
+  - compose/$HOSTNAME/cloudflare-ddns.yml
   #- compose/$HOSTNAME/tailscale.yml
   #- compose/$HOSTNAME/oauth.yml
   #- compose/$HOSTNAME/authelia.yml
