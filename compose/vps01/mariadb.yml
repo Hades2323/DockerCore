@@ -5,8 +5,9 @@ services:
     container_name: mariadb
     image: lscr.io/linuxserver/mariadb
     networks:
-      - default
-      - socket_proxy
+      socket_proxy:
+        ipv4_address: 10.10.10.240 # You can specify a static IP
+      default:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped

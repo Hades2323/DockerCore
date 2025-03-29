@@ -39,4 +39,4 @@ services:
       # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.caddy-rtr.service=caddy-svc"
-      - "traefik.http.services.caddy-svc.loadbalancer.server.port=44432"
+      - "traefik.http.services.caddy-svc.loadbalancer.server.port=443"

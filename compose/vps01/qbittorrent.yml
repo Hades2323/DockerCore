@@ -8,9 +8,12 @@ services:
       - no-new-privileges:true
     restart: unless-stopped
     #profiles: ["apps", "downloads", "all"]
-    network_mode: "service:gluetun"
-    # ports:
-    #   - "8081:8080" # Explosed via gluetun. 8081 because crowdsec is using port 8080
+    network:
+      - t3_proxy
+    ports:
+      - "8077:8080" # crowdsec is using port 8080
+      - "$QBITTORRENT_PORT:6881" # torrenting port tcp
+      - "$QBITTORRENT_PORT:6881/udp" # torrenting port udp
     volumes:
       - $DOCKERDIR/appdata/qbittorrent:/config
       - $TORRENTDOWNLOADDIR:/data/downloads # Ensure that downloads folder is set to /data/downloads in qBittorrent
@@ -18,11 +21,25 @@ services:
       TZ: $TZ
       PUID: $PUID
       PGID: $PGID
-      UMASK_SET: 002
-    healthcheck: # https://github.com/qdm12/gluetun/issues/641#issuecomment-933856220
-      test: "curl -sf https://example.com  || exit 1"
-      interval: 1m
-      timeout: 10s
-      retries: 1
-    labels: # Traefik labels added via glueten
-      - "deunhealth.restart.on.unhealthy=true"
+    # TORRENTING_PORT: $QBITTORRENT_PORT # torrenting udp and tcp port, replace 6881 with $QBITTORRENT_PORT in ports 
+      UMASK_SET: 002 # 002 for group read/write
+    #   UMASK_SET: 022 # 022 for public read-only
+    #   UMASK_SET: 027 # 027 for group read-only
+    #   UMASK_SET: 077 # 077 for private read-only
+    #   UMASK_SET: 0777 # 0777 for public read/write
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.qbittorrent-rtr.entrypoints=websecure"
+      - "traefik.http.routers.qbittorrent-rtr.rule=Host(`qbittorrent.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.qbittorrent-rtr.service=qbittorrent-svc"
+      - "traefik.http.services.qbittorrent-svc.loadbalancer.server.port=8080"

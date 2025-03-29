@@ -6,7 +6,7 @@ services:
     container_name: radarr
     security_opt:
       - no-new-privileges:true
-    restart: "no"
+    restart: unless-stopped
     #profiles: ["media", "arrs", "all"]
     networks:
       - t3_proxy

@@ -10,6 +10,7 @@ services:
     #profiles: ["apps", "all"]
     networks:
       - t3_proxy
+      - socket_proxy
     environment:
       - PMA_HOST=$MARIADB_HOST
       - PMA_PORT=$MARIADB_PORT

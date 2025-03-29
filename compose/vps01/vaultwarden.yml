@@ -1,0 +1,33 @@
+services:
+  # Vaultwarden Password Manager
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    # profiles: ["core", "all"]
+    networks:
+      - t3_proxy
+    environment:
+        # This is required to allow vaultwarden to verify the TLS certificate!
+      - DOMAIN=https://vaultwarden.$DOMAINNAME_00
+    volumes:
+      - $DOCKERDIR/appdata/vaultwarden/data:/data
+    labels:
+    - "traefik.enable=true"
+    ## HTTP Routers
+    - "traefik.http.routers.vaultwarden-rtr.entrypoints=websecure"
+    - "traefik.http.routers.vaultwarden-rtr.rule=Host(`vaultwarden.$DOMAINNAME_HS`)"
+    # - "traefik.http.routers.vaultwarden-rtr.tls=true"
+    # Middlewares
+    # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+    - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+    # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+    # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+    # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+    # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+    # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+    ## HTTP Services
+    - "traefik.http.routers.vaultwarden-rtr.service=vaultwarden-svc"
+    - "traefik.http.services.vaultwarden-svc.loadbalancer.server.port=80"

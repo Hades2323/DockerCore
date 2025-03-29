@@ -115,6 +115,7 @@ include:
   ################################
   #- compose/$HOSTNAME/jdownloader.yml
   #- compose/$HOSTNAME/qbittorrent.yml
+  #- compose/$HOSTNAME/qbittorrent-vpn.yml
   #- compose/$HOSTNAME/sabnzbd.yml
 
   ################################
@@ -172,6 +173,7 @@ include:
   ################################
   ######## UTILITIES ########
   ################################
+  #- compose/$HOSTNAME/vaultwarden.yml
   #- compose/$HOSTNAME/it-tools.yml
   #- compose/$HOSTNAME/isponsorblocktv.yml
   #- compose/$HOSTNAME/firefox.yml

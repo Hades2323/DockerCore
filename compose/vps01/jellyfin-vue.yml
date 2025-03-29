@@ -32,4 +32,4 @@ services:
       # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.jellyfin-vue-rtr.service=jellyfin-vue-svc"
-      - "traefik.http.services.jellyfin-vue-svc.loadbalancer.server.port=38580"
+      - "traefik.http.services.jellyfin-vue-svc.loadbalancer.server.port=80"

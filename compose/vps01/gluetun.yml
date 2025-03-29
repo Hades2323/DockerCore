@@ -24,15 +24,14 @@ services:
       - $DOCKERDIR/appdata/gluetun:/gluetun
     environment:
       TZ: $TZ
+      ###### VPN #######
+      VPN_SERVICE_PROVIDER: $VPN_SERVICE_PROVIDER
+      VPN_TYPE: $VPN_TYPE
       # Wireguard
-      VPN_SERVICE_PROVIDER: surfshark
-      VPN_TYPE: wireguard
       WIREGUARD_PRIVATE_KEY: $WG_PRIVATE_KEY
       WIREGUARD_ADDRESSES: $WG_ADDRESSES
       SERVER_COUNTRIES: $WG_SERVER_COUNTRIES
       # # OpenVPN
-      # VPN_SERVICE_PROVIDER: nordvpn
-      # VPN_TYPE: openvpn
       # OPENVPN_USER: $NORDVPN_USERNAME
       # OPENVPN_PASSWORD: $NORDVPN_PASSWORD
     labels:
@@ -50,4 +49,4 @@ services:
       # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.gluetun-qbittorrent-rtr.service=gluetun-svc" # qBittorrent
-      - "traefik.http.services.gluetun-svc.loadbalancer.server.port=8080" # qBittorrent
+      - "traefik.http.services.gluetun-svc.loadbalancer.server.port=8081" # qBittorrent
