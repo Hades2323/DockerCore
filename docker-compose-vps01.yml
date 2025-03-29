@@ -61,6 +61,8 @@ secrets:
     file: $SECRETSDIR/guac_mysql_password
   vnc_password:
     file: $SECRETSDIR/vnc_password
+  vaultwarden_admin_token:
+    file: $SECRETSDIR/vaultwarden_admin_token
 
 include:
   ######## SERVICES ########

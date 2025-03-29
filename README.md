@@ -66,3 +66,5 @@ Note:
   ```bash
     sudo docker compose -f /opt/docker/core/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs up -d
   ```
+
+### [Wiki](https://github.com/Hades2323/DockerCore/wiki)

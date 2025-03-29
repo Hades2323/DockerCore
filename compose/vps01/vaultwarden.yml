@@ -12,6 +12,7 @@ services:
     environment:
         # This is required to allow vaultwarden to verify the TLS certificate!
       - DOMAIN=https://vaultwarden.$DOMAINNAME_00
+      - ADMIN_TOKEN: /run/secrets/vaultwarden_admin_token
     volumes:
       - $DOCKERDIR/appdata/vaultwarden/data:/data
     labels:
