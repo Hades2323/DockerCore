@@ -1,4 +1,4 @@
-# Use in a Debian-based distro... like Debian :)
+# Use in a Debian-based distro like... Debian :)
 
 1. **Set Keyboard Layout**
    ```bash
