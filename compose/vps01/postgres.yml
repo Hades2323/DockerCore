@@ -1,0 +1,65 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: unless-stopped
+    networks:
+      socket_proxy:
+        ipv4_address: 10.10.10.230 # You can specify a static IP
+      default:
+      t3_proxy:
+    ports:
+      - 5432:5432
+    volumes:
+      - $DOCKERDIR/appdata/postgres/data:/var/lib/postgresql/data
+      - $DOCKERDIR/appdata/postgres/config:/etc/postgresql
+      - $DOCKERDIR/appdata/postgres/backup:/backup
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: /run/secrets/postgres_root_password
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+    secrets:
+      - postgres_root_password
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: /run/secrets/pgadmin_password
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    secrets:
+      - pgadmin_password
+    networks:
+      -t3_proxy
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.pgadmin-rtr.entrypoints=websecure"
+      - "traefik.http.routers.pgadmin-rtr.rule=Host(`pgadmin.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.pgadmin-rtr.service=pgadmin-svc"
+      - "traefik.http.services.pgadmin-svc.loadbalancer.server.port=80"
+

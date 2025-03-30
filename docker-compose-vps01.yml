@@ -41,6 +41,10 @@ secrets:
     file: $SECRETSDIR/traefik_forward_auth
   mysql_root_password:
     file: $SECRETSDIR/mysql_root_password
+  postgres_password:
+    file: $SECRETSDIR/postgres_root_password
+  pgadmin_password:
+    file: $SECRETSDIR/pgadmin_password
   authelia_jwt_secret:
     file: $SECRETSDIR/authelia_jwt_secret
   authelia_session_secret:
@@ -63,6 +67,8 @@ secrets:
     file: $SECRETSDIR/vnc_password
   vaultwarden_admin_token:
     file: $SECRETSDIR/vaultwarden_admin_token
+  commafeed_db_password:
+    file: $SECRETSDIR/commafeed_db_password
 
 include:
   ######## SERVICES ########
@@ -143,6 +149,12 @@ include:
   #- compose/$HOSTNAME/jellyfin-vue.yml
 
   ################################
+  ######## BOOKS AND NEWS ########
+  ################################
+  #- compose/$HOSTNAME/calibre.yml
+  #- compose/$HOSTNAME/commafeed.yml
+
+  ################################
   ######## COMPLEMENTARY APPS ########
   ################################
   #- compose/$HOSTNAME/prowlarr.yml
@@ -160,7 +172,6 @@ include:
   #- compose/$HOSTNAME/grafana.yml
   #- compose/$HOSTNAME/uptime-kuma.yml
   #- compose/$HOSTNAME/dozzle.yml
-  #- compose/$HOSTNAME/scrutiny.yml
   #- compose/$HOSTNAME/radarr-exporter.yml
   #- compose/$HOSTNAME/sonarr-exporter.yml
   #- compose/$HOSTNAME/lidarr-exporter.yml
@@ -199,3 +210,9 @@ include:
   ################################
   #- compose/$HOSTNAME/docker-gc.yml
   #- compose/$HOSTNAME/deunhealth.yml
+
+
+  ################################
+  ######## OBSOLETE ########
+  ################################
+  #- compose/$HOSTNAME/obsolete/scrutiny.yml
