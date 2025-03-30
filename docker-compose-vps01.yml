@@ -93,6 +93,7 @@ include:
   #- compose/$HOSTNAME/prometheus.yml
   - compose/$HOSTNAME/mariadb.yml
   #- compose/$HOSTNAME/influxdb.yml
+  #- compose/$HOSTNAME/postgres.yml
 
   ################################
   ######## SECURITY ########
@@ -189,6 +190,7 @@ include:
   ################################
   ######## UTILITIES ########
   ################################
+  #- compose/$HOSTNAME/homeassistant.yml
   #- compose/$HOSTNAME/vaultwarden.yml
   #- compose/$HOSTNAME/it-tools.yml
   #- compose/$HOSTNAME/isponsorblocktv.yml
