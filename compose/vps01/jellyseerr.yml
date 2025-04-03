@@ -1,0 +1,37 @@
+# jellyseerr using Docker.
+services:
+  jellyseerr:
+    image: fallenbagel/jellyseerr:latest
+    container_name: jellyseerr
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - 5055:5055
+    #profiles: ["apps", "all"]
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - LOG_LEVEL=debug # optional
+    volumes:
+      - $DOCKERDIR/appdata/jellyseerr/config:/app/config
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.jellyseerr-rtr.entrypoints=websecure"
+      - "traefik.http.routers.jellyseerr-rtr.rule=Host(`jellyseerr.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.jellyseerr-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.jellyseerr-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.jellyseerr-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.jellyseerr-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.jellyseerr-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.jellyseerr-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.jellyseerr-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.jellyseerr-rtr.service=jellyseerr-svc"
+      - "traefik.http.services.jellyseerr-svc.loadbalancer.server.port=5055"

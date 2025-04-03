@@ -1,0 +1,49 @@
+# This file is part of Semaphoreui
+---
+services:
+    semaphore:
+      image: public.ecr.aws/semaphore/pro/server:v2.13.5
+      container_name: semaphore
+      hostname: semaphore
+      restart: unless-stopped
+      networks:
+        - socket_proxy
+        - t3_proxy
+      ports:
+        - 51248:3000
+      depends:
+        - postgres
+      links:
+        - postgres
+      volumes:
+        - $DOCKERDIR/appdata/semaphore/data:/var/lib/semaphore
+        - $DOCKERDIR/appdata/semaphore/config:/etc/semaphore
+        - $DOCKERDIR/appdata/semaphore/tmp:/tmp/semaphore
+      environment:
+        SEMAPHORE_DB_DIALECT: ${SEMAPHORE_DB_DIALECT}
+        SEMAPHORE_DB_HOST: ${SEMAPHORE_DB_HOST}
+        SEMAPHORE_DB_PORT: ${SEMAPHORE_DB_PORT}
+        SEMAPHORE_DB_NAME: ${SEMAPHORE_DB_NAME}
+        SEMAPHORE_DB_USER: ${SEMAPHORE_DB_USER}
+        SEMAPHORE_DB_PASS: ${SEMAPHORE_DB_PASS}
+        SEMAPHORE_ADMIN: ${SEMAPHORE_ADMIN}
+        SEMAPHORE_ADMIN_PASSWORD: ${SEMAPHORE_ADMIN_PASSWORD}
+        SEMAPHORE_ADMIN_NAME: ${SEMAPHORE_ADMIN_NAME}
+        SEMAPHORE_ADMIN_EMAIL: ${SEMAPHORE_ADMIN_EMAIL}
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.semaphore-rtr.entrypoints=websecure"
+      - "traefik.http.routers.semaphore-rtr.rule=Host(`semaphore.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.semaphore-rtr.service=semaphore-svc"
+      - "traefik.http.services.semaphore-svc.loadbalancer.server.port=3000"      
+      

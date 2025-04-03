@@ -110,12 +110,18 @@ include:
   #- compose/$HOSTNAME/pgadmin.yml
   #- compose/$HOSTNAME/metabase.yml
   #- compose/$HOSTNAME/umami.yml
+  #- compose/$HOSTNAME/redis.yml
+  #- compose/$HOSTNAME/redis-commander.yml
+  #- compose/$HOSTNAME/cloudbeaver.yml
+  #- compose/$HOSTNAME/phpmyadmin.yml
+
 
   ################################
   ######## SECURITY ########
   ################################
   #- compose/$HOSTNAME/crowdsec.yml
   #- compose/$HOSTNAME/traefik-bouncer.yml
+  #- compose/$HOSTNAME/adguardhome.yml
 
   ################################
   ######## WEBSERVER ########
@@ -134,7 +140,6 @@ include:
   ################################
   #- compose/$HOSTNAME/autoindex.yml
   - compose/$HOSTNAME/homepage.yml
-  #- compose/$HOSTNAME/phpmyadmin.yml
   #- compose/$HOSTNAME/sitespeed.yml
   #- compose/$HOSTNAME/whoami.yml
 
@@ -186,6 +191,8 @@ include:
   #- compose/$HOSTNAME/makemkv.yml
   #- compose/$HOSTNAME/mkvtoolnix.yml
   #- compose/$HOSTNAME/metube.yml
+  #- compose/$HOSTNAME/semaphore.yml
+  #- compose/$HOSTNAME/filebrowser.yml
 
   ################################
   ######## NETWORK ########
@@ -219,6 +226,8 @@ include:
   #- compose/$HOSTNAME/bazarr.yml
   #- compose/$HOSTNAME/flaresolverr.yml
   #- compose/$HOSTNAME/recyclarr.yml
+  #- compose/$HOSTNAME/jellyseerr.yml
+  #- compose/$HOSTNAME/overseerr.yml
 
   ################################
   ######## MEDIA SERVERS ########

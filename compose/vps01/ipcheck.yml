@@ -1,0 +1,49 @@
+# ipcheck using Docker.
+services:
+  ipcheck:
+    image: jason5ng32/myip:latest
+    container_name: ipcheck
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - 11966:11966
+      - 18966:18966
+    #profiles: ["apps", "all"]
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      #- BACKEND_PORT=$IPCHECK_BACKEND_PORT
+      #- FRONTEND_PORT=$IPCHECK_FRONTEND_PORT
+      #- SECURITY_RATE_LIMIT=$IPCHECK_SECURITY_RATE_LIMIT
+      #- SECURITY_DELAY_AFTER=$IPCHECK_SECURITY_DELAY_AFTER
+      #- SECURITY_BLACKLIST_LOG_FILE_PATH=$IPCHECK_SECURITY_BLACKLIST_LOG_FILE_PATH
+      #- BING_MAP_API_KEY=$IPCHECK_BING_MAP_API_KEY
+      #- ALLOWED_DOMAINS=$IPCHECK_ALLOWED_DOMAINS
+      #- IPCHECKING_API_KEY=$IPCHECK_IPCHECKING_API_KEY
+      #- IPINFO_API_TOKEN=$IPCHECK_IPINFO_API_TOKEN
+      #- IPAPIIS_API_KEY=$IPCHECK_IPAPIIS_API_KEY
+      #- KEYCDN_USER_AGENT=$IPCHECK_KEYCDN_USER_AGENT
+      #- CLOUDFLARE_API=$IPCHECK_CLOUDFLARE_API
+    volumes:
+      - $DOCKERDIR/appdata/ipcheck/config:/app/config
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.ipcheck-rtr.entrypoints=websecure"
+      - "traefik.http.routers.ipcheck-rtr.rule=Host(`ipcheck.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.ipcheck-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.ipcheck-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.ipcheck-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.ipcheck-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.ipcheck-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.ipcheck-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.ipcheck-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.ipcheck-rtr.service=ipcheck-svc"
+      - "traefik.http.services.ipcheck-svc.loadbalancer.server.port=18966"

@@ -17,6 +17,7 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.traefik.address=:8080
+      - --entryPoints.dot.address=:853 # DNS over TLS
       # - --entrypoints.ping.address=:8081
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
@@ -100,6 +101,14 @@ services:
         published: 8080         # comment when tested and ready to deploy after staging phase
         protocol: tcp           # comment when tested and ready to deploy after staging phase
         mode: host              # comment when tested and ready to deploy after staging phase
+      - target: 853 #dns secure
+        published: 853
+        protocol: tcp
+        mode: host
+      #- target: 53 #dns unsecure
+      #  published: 53
+      #  protocol: tcp
+      #  mode: host
       #- target: 25 # SMTP Port # Publish external access ports
       #  published: 25
       #  protocol: tcp

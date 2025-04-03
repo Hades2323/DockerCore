@@ -1,0 +1,56 @@
+#
+services:
+    cloudbeaver:
+      image: dbeaver/cloudbeaver:latest
+      container_name: cloudbeaver
+      hostname: cloudbeaver
+      restart: unless-stopped
+      networks:
+        - socket_proxy
+        - t3_proxy
+      ports:
+        - 8978:8978
+      depends:
+        - postgres
+      links:
+        - postgres
+      volumes:
+        - $DOCKERDIR/appdata/cloudbeaver/workspace:/opt/cloudbeaver/workspace
+        #- $DOCKERDIR/appdata/cloudbeaver/config:/etc/cloudbeaver
+        #- $DOCKERDIR/appdata/cloudbeaver/tmp:/tmp/cloudbeaver
+      environment: #USED BY COMMERCIAL VERSION
+        IMAGE_SOURCE=${CLOUDBEAVER_IMAGE_SOURCE}
+        PODMAN_IMAGE_SOURCE=${CLOUDBEAVER_PODMAN_IMAGE_SOURCE}
+        COMPOSE_PROJECT_NAME=${CLOUDBEAVER_COMPOSE_PROJECT_NAME}
+        VERSION_TAG=${CLOUDBEAVER_VERSION_TAG}
+        REPLICA_COUNT_EE=${CLOUDBEAVER_REPLICA_COUNT_EE}
+        CLOUDBEAVER_WEB_SERVER_PORT=${CLOUDBEAVER_WEB_SERVER_PORT}
+        CLOUDBEAVER_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
+        CLOUDBEAVER_DB_URL=${CLOUDBEAVER_DB_URL}
+        CLOUDBEAVER_DB_USER=${CLOUDBEAVER_DB_USER}
+        CLOUDBEAVER_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
+        CLOUDBEAVER_DB_SCHEMA=${CLOUDBEAVER_DB_SCHEMA}
+        CLOUDBEAVER_QM_DB_DRIVER=${CLOUDBEAVER_DB_DRIVER}
+        CLOUDBEAVER_QM_DB_URL=${CLOUDBEAVER_DB_URL}
+        CLOUDBEAVER_QM_DB_USER=${CLOUDBEAVER_DB_USER}
+        CLOUDBEAVER_QM_DB_PASSWORD=${CLOUDBEAVER_DB_PASSWORD}
+        CLOUDBEAVER_QM_DB_SCHEMA=${CLOUDBEAVER_QM_DB_SCHEMA}
+        CLOUDBEAVER_DMSVC_URL=${CLOUDBEAVER_DMSVC_URL}
+        CLOUDBEAVER_RESTRICT_EXTERNAL_SERVICES_INVOCATION=${CLOUDBEAVER_RESTRICT_EXTERNAL_SERVICES_INVOCATION}
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.cloudbeaver-rtr.entrypoints=websecure"
+      - "traefik.http.routers.cloudbeaver-rtr.rule=Host(`cloudbeaver.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.cloudbeaver-rtr.service=cloudbeaver-svc"
+      - "traefik.http.services.cloudbeaver-svc.loadbalancer.server.port=8978"      
+      

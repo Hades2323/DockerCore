@@ -1,0 +1,38 @@
+# filebrowser using Docker.
+services:
+  filebrowser:
+    image: filebrowser/filebrowser:s6
+    container_name: filebrowser
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - 54785:8080
+    #profiles: ["apps", "all"]
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    volumes:
+      - $DOCKERDIR/appdata/filebrowser/database/filebrowser.db:/database/filebrowser.db
+      - $DOCKERDIR/appdata/filebrowser/config/settings.json:/config/settings.json
+      - $DOCKERDIR:/srv
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.filebrowser-rtr.entrypoints=websecure"
+      - "traefik.http.routers.filebrowser-rtr.rule=Host(`filebrowser.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.filebrowser-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.filebrowser-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.filebrowser-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.filebrowser-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.filebrowser-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.filebrowser-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.filebrowser-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.filebrowser-rtr.service=filebrowser-svc"
+      - "traefik.http.services.filebrowser-svc.loadbalancer.server.port=8080"

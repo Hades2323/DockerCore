@@ -84,6 +84,7 @@ sudo ufw allow 54321/udp
 #sudo ufw allow 7946/udp
 # Allow connections to the DNS (if needed)
 sudo ufw allow 53/tcp
+sudo ufw allow 853/tcp
 # Allow connections to the Docker Registry (if needed)
 #sudo ufw allow 5000/tcp
 # Allow connections to the Docker Volume (if needed)
