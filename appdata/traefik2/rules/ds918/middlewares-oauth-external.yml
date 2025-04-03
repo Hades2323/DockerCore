@@ -1,8 +1,0 @@
-http:
-  middlewares:
-    middlewares-oauth-external:
-      forwardAuth:
-        address: "https://oauth.{{env "DOMAINNAME_03"}}"
-        trustForwardHeader: true
-        authResponseHeaders:
-          - "X-Forwarded-User"

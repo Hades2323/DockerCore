@@ -1,0 +1,36 @@
+
+services:
+  obsidian:
+    image: lscr.io/linuxserver/obsidian:latest
+    container_name: obsidian
+    security_opt:
+      - seccomp:unconfined #optional
+    restart: unless-stopped
+    networks:
+      - t3_proxy
+    ports:
+      - 53488:3000
+      - 53917:3001
+    #profiles: ["apps", "all"]
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    volumes:
+      - $DOCKERDIR/appdata/obsidian/configconfig:/config
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.obsidian-rtr.entrypoints=websecure"
+      - "traefik.http.routers.obsidian-rtr.rule=Host(`obsidian.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.obsidian-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.obsidian-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.obsidian-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.obsidian-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.obsidian-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.obsidian-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.obsidian-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.obsidian-rtr.service=obsidian-svc"
+      - "traefik.http.services.obsidian-svc.loadbalancer.server.port=3000"

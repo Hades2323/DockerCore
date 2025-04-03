@@ -26,8 +26,13 @@ services:
     ports:
       - 2283:2283
     depends_on:
-      - redis
-      - database
+      - immich-redis
+      - immich-database
+      - postgres
+    links:
+      - immich-redis
+      - immich-database
+      - postgres
     restart: unless-stopped
     healthcheck:
       disable: false
@@ -70,13 +75,13 @@ services:
     restart: unless-stopped
     healthcheck:
       disable: false
-  redis:
+  immich-redis:
     container_name: immich_redis
     image: redis:6.2-alpine@sha256:148bb5411c184abd288d9aaed139c98123eeb8824c5d3fce03cf721db58066d8
     healthcheck:
       test: redis-cli ping || exit 1
     restart: unless-stopped
-  database:
+  immich-database:
     container_name: immich_postgres
     image: tensorchord/pgvecto-rs:pg14-v0.2.0@sha256:739cdd626151ff1f796dc95a6591b55a714f341c737e27f045019ceabf8e8c52
     #env_file:

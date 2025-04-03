@@ -69,7 +69,20 @@ secrets:
     file: $SECRETSDIR/vaultwarden_admin_token
   commafeed_db_password:
     file: $SECRETSDIR/commafeed_db_password
-
+  nextcloud_admin_password:
+    file: $SECRETSDIR/nextcloud_admin_password # put admin password in this file
+  nextcloud_admin_user:
+    file: $SECRETSDIR/nextcloud_admin_user # put admin username in this file
+  nextcloud_apostgres_db:
+    file: $SECRETSDIR/nextcloud_apostgres_db # put postgresql db name in this file
+  nextcloud_apostgres_password:
+    file: $SECRETSDIR/nextcloud_apostgres_password # put postgresql password in this file
+  nextcloud_apostgres_user:
+    file: $SECRETSDIR/nextcloud_apostgres_user # put postgresql username in this file
+  odoo_postgres_password:
+    file: $SECRETSDIR/odoo_postgres_password # put postgresql password in this file
+  odoo_password:
+    file: $SECRETSDIR/odoo_password # put odoo password in this file
 include:
   ######## SERVICES ########
   # PREFIX - vps01
@@ -93,7 +106,10 @@ include:
   #- compose/$HOSTNAME/prometheus.yml
   - compose/$HOSTNAME/mariadb.yml
   #- compose/$HOSTNAME/influxdb.yml
-  #- compose/$HOSTNAME/postgres.yml
+  - compose/$HOSTNAME/postgres.yml
+  #- compose/$HOSTNAME/pgadmin.yml
+  #- compose/$HOSTNAME/metabase.yml
+  #- compose/$HOSTNAME/umami.yml
 
   ################################
   ######## SECURITY ########
@@ -111,7 +127,7 @@ include:
   ######## OPERATING SYSTEMS ########
   ################################
   #- compose/$HOSTNAME/ubuntu.yml
-
+  #- compose/$HOSTNAME/kali-linux.yml
 
   ################################
   ######## FRONTEND ########
@@ -122,48 +138,19 @@ include:
   #- compose/$HOSTNAME/sitespeed.yml
   #- compose/$HOSTNAME/whoami.yml
 
-  ################################
-  ######## DOWNLOADERS ########
-  ################################
-  #- compose/$HOSTNAME/jdownloader.yml
-  #- compose/$HOSTNAME/qbittorrent.yml
-  #- compose/$HOSTNAME/qbittorrent-vpn.yml
-  #- compose/$HOSTNAME/sabnzbd.yml
 
   ################################
-  ######## PVRS ########
+  ########## OFFICE ##########
   ################################
-  #- compose/$HOSTNAME/sonarr.yml
-  #- compose/$HOSTNAME/radarr.yml
-  #- compose/$HOSTNAME/lidarr.yml
+  #- compose/$HOSTNAME/nextcloud.yml
+  #- compose/$HOSTNAME/vaultwarden.yml
+  #- compose/$HOSTNAME/odoo.yml
+  #- compose/$HOSTNAME/obsidian.yml
+  #- compose/$HOSTNAME/openwebui.yml
+  #- compose/$HOSTNAME/mattermost.yml
+  #- compose/$HOSTNAME/dockermailserver.yml
 
-  ################################
-  ######## MEDIA SERVERS ########
-  ################################
-  #- compose/$HOSTNAME/jellyfin.yml
-  #- compose/$HOSTNAME/airsonic-advanced.yml
-  #- compose/$HOSTNAME/plex.yml
-  #- compose/$HOSTNAME/tautulli.yml
-  #- compose/$HOSTNAME/overseerr.yml
-  #- compose/$HOSTNAME/plex-meta-manager.yml
-  #- compose/$HOSTNAME/plex-image-cleanup.yml
-  #- compose/$HOSTNAME/jellyfin-vue.yml
 
-  ################################
-  ######## BOOKS AND NEWS ########
-  ################################
-  #- compose/$HOSTNAME/calibre.yml
-  #- compose/$HOSTNAME/commafeed.yml
-
-  ################################
-  ######## COMPLEMENTARY APPS ########
-  ################################
-  #- compose/$HOSTNAME/prowlarr.yml
-  #- compose/$HOSTNAME/notifiarr.yml
-  #- compose/$HOSTNAME/bazarr.yml
-  #- compose/$HOSTNAME/picard.yml
-  #- compose/$HOSTNAME/recyclarr.yml
-  #- compose/$HOSTNAME/flaresolverr.yml
 
   ################################
   ######## MONITORING ########
@@ -191,15 +178,14 @@ include:
   ######## UTILITIES ########
   ################################
   #- compose/$HOSTNAME/homeassistant.yml
-  #- compose/$HOSTNAME/vaultwarden.yml
   #- compose/$HOSTNAME/it-tools.yml
   #- compose/$HOSTNAME/isponsorblocktv.yml
   #- compose/$HOSTNAME/firefox.yml
   #- compose/$HOSTNAME/firefly.yml
-  # FILE MANAGEMENT
   #- compose/$HOSTNAME/vscode.yml
   #- compose/$HOSTNAME/makemkv.yml
   #- compose/$HOSTNAME/mkvtoolnix.yml
+  #- compose/$HOSTNAME/metube.yml
 
   ################################
   ######## NETWORK ########
@@ -212,6 +198,51 @@ include:
   ################################
   #- compose/$HOSTNAME/docker-gc.yml
   #- compose/$HOSTNAME/deunhealth.yml
+
+
+  ################################
+  ######## DOWNLOADERS ########
+  ################################
+  #- compose/$HOSTNAME/jdownloader.yml
+  #- compose/$HOSTNAME/qbittorrent.yml
+  #- compose/$HOSTNAME/qbittorrent-vpn.yml
+  #- compose/$HOSTNAME/sabnzbd.yml
+
+  ################################
+  ######## MEDIA MANAGEMENT - ARR SUITE ########
+  ################################
+  #- compose/$HOSTNAME/sonarr.yml
+  #- compose/$HOSTNAME/radarr.yml
+  #- compose/$HOSTNAME/lidarr.yml
+  #- compose/$HOSTNAME/prowlarr.yml
+  #- compose/$HOSTNAME/notifiarr.yml
+  #- compose/$HOSTNAME/bazarr.yml
+  #- compose/$HOSTNAME/flaresolverr.yml
+  #- compose/$HOSTNAME/recyclarr.yml
+
+  ################################
+  ######## MEDIA SERVERS ########
+  ################################
+  #- compose/$HOSTNAME/jellyfin.yml
+  #- compose/$HOSTNAME/airsonic-advanced.yml
+  #- compose/$HOSTNAME/plex.yml
+  #- compose/$HOSTNAME/tautulli.yml
+  #- compose/$HOSTNAME/overseerr.yml
+  #- compose/$HOSTNAME/plex-meta-manager.yml
+  #- compose/$HOSTNAME/plex-image-cleanup.yml
+  #- compose/$HOSTNAME/jellyfin-vue.yml
+
+  ################################
+  ######## BOOKS AND NEWS ########
+  ################################
+  #- compose/$HOSTNAME/calibre.yml
+  #- compose/$HOSTNAME/commafeed.yml
+  #- compose/$HOSTNAME/calibre-web.yml
+
+  ################################
+  ######## COMPLEMENTARY APPS ########
+  ################################
+  #- compose/$HOSTNAME/picard.yml
 
 
   ################################

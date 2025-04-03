@@ -11,6 +11,10 @@ services:
     networks:
       - t3_proxy
       - socket_proxy
+    depends_on:
+      - mariadb
+    links:
+      - mariadb
     environment:
       - PMA_HOST=$MARIADB_HOST
       - PMA_PORT=$MARIADB_PORT

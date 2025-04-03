@@ -1,0 +1,78 @@
+services:
+  networks:
+    - t3_proxy
+    - socket_proxy
+  #db:
+  #  image: postgres
+  #  restart: always
+  #  volumes:
+  #    - db:/var/lib/postgresql/data
+  #  environment:
+  #    - POSTGRES_DB_FILE=/run/secrets/postgres_db
+  #    - POSTGRES_USER_FILE=/run/secrets/postgres_user
+  #    - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_password
+  #  secrets:
+  #    - postgres_db
+  #    - postgres_password
+  #    - postgres_user
+
+  nextcloud-redis:
+    image: redis:alpine
+    restart: unless-stopped
+
+  nextcloud-app:
+    image: nextcloud
+    restart: unless-stopped
+    ports:
+      - 8080:80
+    volumes:
+      - $DOCKERDIR/appdata/nextcloud:/var/www/html
+      - $DOCKERDIR/appdata/nextcloud/custom_apps:/var/www/html/custom_apps
+      - $DOCKERDIR/appdata/nextcloud/config:/var/www/html/config
+      - $DOCKERDIR/appdata/nextcloud/data:/var/www/html/data
+      - $DOCKERDIR/appdata/nextcloud/themes:/var/www/html/themes
+    environment:
+      - POSTGRES_HOST=$NEXTCLOUD_POSTGRES_HOST
+      #- POSTGRES_DB_FILE=/run/secrets/nextcloud_postgres_db
+      #- POSTGRES_USER_FILE=/run/secrets/nextcloud_postgres_user
+      #- POSTGRES_PASSWORD_FILE=/run/secrets/nextcloud_postgres_password
+      #- NEXTCLOUD_ADMIN_PASSWORD_FILE=/run/secrets/nextcloud_admin_password
+      #- NEXTCLOUD_ADMIN_USER_FILE=/run/secrets/nextcloud_admin_user
+      - POSTGRES_DB=$NEXTCLOUD_POSTGRES_DB
+      - POSTGRES_USER=$NEXTCLOUD_POSTGRES_USER
+      - POSTGRES_PASSWORD=$NEXTCLOUD_POSTGRES_PASSWORD
+      - NEXTCLOUD_ADMIN_PASSWORD=$NEXTCLOUD_ADMIN_PASSWORD
+      - NEXTCLOUD_ADMIN_USER=$NEXTCLOUD_ADMIN_USER
+      #- NEXTCLOUD_DATA_DIR$NEXTCLOUD_DATA_DIR
+    depends_on:
+      - nextcloud-redis
+      - postgres
+    links:
+      - nextcloud-redis
+      - db
+      - postgres
+    secrets:
+      - nextcloud_admin_password
+      - nextcloud_admin_user
+      - nextcloud_postgres_db
+      - nextcloud_postgres_password
+      - nextcloud_postgres_user
+    networks:
+      - t3_proxy
+      - socket_proxy
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.nextcloud-rtr.entrypoints=websecure"
+      - "traefik.http.routers.nextcloud-rtr.rule=Host(`nextcloud.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.nextcloud-rtr.service=nextcloud-svc"
+      - "traefik.http.services.nextcloud-svc.loadbalancer.server.port=80"

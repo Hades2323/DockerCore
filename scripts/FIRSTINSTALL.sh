@@ -65,6 +65,13 @@ sudo ufw allow 55222/tcp
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
 sudo ufw allow 443/udp
+# Allow connections to qbitorrent
+sudo ufw allow 54321/tcp
+sudo ufw allow 54321/udp
+# Allow connections to Lyrion Music Server (if needed)
+#sudo ufw allow 9090/tcp
+#sudo ufw allow 3483/tcp
+#sudo ufw allow 3483/udp
 # Allow Docker connections (if needed)
 #sudo ufw allow 2375/tcp
 # Allow connections to the Docker API (if needed)
@@ -143,6 +150,12 @@ sudo cp -r /opt/docker/core/appdata/traefik3/rules/vps01/ /opt/docker/core/appda
 sudo cp -r /opt/docker/core/logs/vps01/ /opt/docker/core/logs/$(hostname)
 sudo cp -r /opt/docker/core/compose/vps01/ /opt/docker/core/compose/$(hostname)
 sudo chmod 600 /opt/docker/core/appdata/traefik3/acme/acme.json
+sudo chmod +x /opt/docker/core/appdata/postgresql/script/*
+sudo chmod +x /opt/docker/core/appdata/mariadb/script/*
+
+# mattermost default uid and gid is 2000
+# Set the ownership of the mattermost folder to the 'apps' user and group
+sudo chown -R 2000:2000 /opt/docker/core/appdata/mattermost
 
 # Get the UID and GID of the 'apps' user and group
 APPS_UID=$(id -u apps)
@@ -178,6 +191,12 @@ echo -e "Create root mariadb user password: "
 read -sp "Enter password: " MARIADB_ROOT_PASSWORD
 echo
 echo "$MARIADB_ROOT_PASSWORD" | sudo tee /opt/docker/core/secrets/mysql_root_password
+
+# Create the secret for postgres user
+echo -e "Create postgres user password: "
+read -sp "Enter password: " POSTGRES_ROOT_PASSWORD
+echo
+echo "$POSTGRES_ROOT_PASSWORD" | sudo tee /opt/docker/core/secrets/postgres_root_password
 
 # Create the secret for vnc password
 echo -e "Create vnc password: "

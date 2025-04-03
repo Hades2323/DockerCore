@@ -10,7 +10,7 @@ services:
     networks:
       - t3_proxy
     ports:
-      - 8083:8083
+      - 58083:8083
     volumes:
       - $DOCKERDIR/appdata/calibre/data:/config
       - $BOOKS_DIR:/books

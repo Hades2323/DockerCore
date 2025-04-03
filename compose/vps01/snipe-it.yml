@@ -1,0 +1,51 @@
+# Compose file for production.
+services:
+  snipe-it:
+    image: snipe/snipe-it
+    restart: unless-stopped
+    container_name: snipe-it
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - t3_proxy
+      - socket_proxy 
+    ports:
+      - "8387:80"
+    volumes:
+      - storage:/var/lib/snipeit
+      - $DOCKERDIR/appdata/snipe-it/config:/var/www/html/.env
+    depends_on:
+      mariadb:
+        condition: service_healthy
+        restart: true
+    links:
+      - mariadb
+    environment:
+      #- APP_URL=$SNIPEIT_APP_URL
+      #- APP_KEY=$SNIPE_IT_APP_KEY
+      - DB_CONNECTION=mysql
+      - DB_HOST=$MARIADB_DB_HOST
+      - DB_PORT=$MARIADB_DB_PORT
+      - DB_DATABASE=$SNIPE_IT_DB_NAME
+      - DB_USERNAME=$SNIPE_IT_DB_USER
+      - DB_PASSWORD=$SNIPE_IT_DB_PASSWORD
+      #- APP_ENV=production
+      #- APP_DEBUG=false
+      - APP_TIMEZONE=$TZ
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.snipe-it-rtr.entrypoints=websecure"
+      - "traefik.http.routers.snipe-it-rtr.rule=Host(`snipe-it.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.snipe-it-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.snipe-it-rtr.service=snipe-it-svc"
+      - "traefik.http.services.snipe-it-svc.loadbalancer.server.port=80"
+      

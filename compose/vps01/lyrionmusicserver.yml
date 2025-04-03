@@ -1,0 +1,40 @@
+# Lyrion Music Server
+services:
+  lms:
+    container_name: lms
+    image: lmscommunity/lyrionmusicserver
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - 9000:9000/tcp
+      - 9090:9090/tcp
+      - 3483:3483/tcp
+      - 3483:3483/udp
+    volumes:
+      - $DOCKERDIR/appdata/lms/config:/config:rw
+      - $MEDIA_DIR/music:music:ro
+      - $DOCKERDIR/appdata/lms/playlist:/playlist:rw
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.lms-rtr.entrypoints=websecure"
+      - "traefik.http.routers.lms-rtr.rule=Host(`lms.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.lms-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.lms-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.lms-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.lms-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.lms-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.lms-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.lms-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.lms-rtr.service=lms-svc"
+      - "traefik.http.services.lms-svc.loadbalancer.server.port=9000"

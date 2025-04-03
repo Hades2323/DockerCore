@@ -1,0 +1,39 @@
+# Kali Linux Docker Compose File
+services:
+  kali-linux:
+    image: lscr.io/linuxserver/kali-linux:latest
+    container_name: kali-linux
+    restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined #optional
+    networks:
+      - t3_proxy
+    ports:
+      - 53486:3000
+      - 53987:3001
+    environment:
+      - PUID=$PUID 
+      - PGID=$PGID 
+      - TZ=$TZ 
+      #- SUBFOLDER=/ 
+      - TITLE=Kali #optional
+    volumes:
+      - $DOCKERDIR/appdata/kali/data:/config
+    devices:
+      - /dev/dri:/dev/dri #optional
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.kali-linux-rtr.entrypoints=websecure"
+      - "traefik.http.routers.kali-linux-rtr.rule=Host(`kali.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.kali-linux-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.kali-linux-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.kali-linux-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.kali-linux-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.kali-linux-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.kali-linux-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.kali-linux-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.kali-linux-rtr.service=kali-linux-svc"
+      - "traefik.http.services.kali-linux-svc.loadbalancer.server.port=3000"
