@@ -1,0 +1,45 @@
+services:
+  # recipya - RECIPES CONTAINER
+  recipya:
+    image: reaper99/recipya:v1.2.2
+    container_name: recipya
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    #profiles: ["apps", "all"]
+    networks:
+      - t3_proxy
+    ports:
+      - "8078:8078"
+    volumes:
+      - $DOCKERDIR/appdata/recipya:/appdata
+    environment:
+      RECIPYA_EMAIL: $RECIPYA_EMAIL
+      RECIPYA_EMAIL_SENDGRID: $RECIPYA_EMAIL_SENDGRID
+      RECIPYA_DI_KEY: $RECIPYA_DI_KEY
+      RECIPYA_DI_ENDPOINT: $RECIPYA_DI_ENDPOINT
+      RECIPYA_SERVER_AUTOLOGIN: $RECIPYA_SERVER_AUTOLOGIN
+      RECIPYA_SERVER_IS_DEMO: $RECIPYA_SERVER_IS_DEMO
+      RECIPYA_SERVER_IS_PROD: $RECIPYA_SERVER_IS_PROD
+      RECIPYA_SERVER_NO_SIGNUPS: $RECIPYA_SERVER_NO_SIGNUPS
+      RECIPYA_SERVER_PORT: $RECIPYA_SERVER_PORT
+      RECIPYA_SERVER_URL: $RECIPYA_SERVER_URL
+    user:
+      UID: $PUID
+      GID: $PGID
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.recipya-rtr.entrypoints=websecure"
+      - "traefik.http.routers.recipya-rtr.rule=Host(`recipya.$DOMAINNAME_00`) || Host(`www.recipya.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.recipya-rtr.service=recipya-svc"
+      - "traefik.http.services.recipya-svc.loadbalancer.server.port=8078"

@@ -1,0 +1,111 @@
+# Troubleshooting:
+# ----------------
+#
+# If you run into problems, you should open a Discussion here:
+#
+# https://github.com/maybe-finance/maybe/discussions/categories/general
+services:
+  maybe_app:
+    image: ghcr.io/maybe-finance/maybe:latest
+    container_name: maybe_app
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    #profiles: ["apps", "all", "finance"]
+    depends_on:
+      - postgres
+      - maybe_redis
+    links:
+      - postgres
+      - maybe_redis
+    networks:
+      - t3_proxy
+      - socket_proxy
+      - maybe
+    ports:
+      - 59302:3000
+    volumes:
+      - $DOCKERDIR/appdata/maybe/data:/rails/storage
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.maybe-rtr.entrypoints=websecure"
+      - "traefik.http.routers.maybe-rtr.rule=Host(`maybe.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.maybe-rtr.service=maybe-svc"
+      - "traefik.http.services.maybe-svc.loadbalancer.server.port=3000"
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - SECRET_KEY_BASE=$MAYBE_SECRET_KEY_BASE
+      - POSTGRES_PASSWORD=$MAYBE_POSTGRES_PASSWORD
+      - POSTGRES_USER=$MAYBE_POSTGRES_USER
+      - POSTGRES_DB=$MAYBE_POSTGRES_DB
+      - POSTGRES_HOST=$MAYBE_POSTGRES_HOST
+      - SELF_HOSTED=$MAYBE_SELF_HOSTED
+      - RAILS_FORCE_SSL=$MAYBE_RAILS_FORCE_SSL
+      - RAILS_ASSUME_SSL=$MAYBE_RAILS_ASSUME_SSL
+      - DB_HOST=$MAYBE_DB_HOST
+      - DB_PORT=$MAYBE_DB_PORT
+      - REDIS_URL=$MAYBE_REDIS_URL
+
+  maybe_worker:
+    image: ghcr.io/maybe-finance/maybe:latest
+    hostname: maybe_worker
+    restart: unless-stopped
+    #profiles: ["apps", "all", "finance"]
+    container_name: maybe_worker
+    depends_on:
+      - maybe_redis
+    links:
+      - postgres
+      - maybe_redis
+    networks:
+      - maybe
+      - socket_proxy
+      #- t3_proxy
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - SECRET_KEY_BASE=$MAYBE_SECRET_KEY_BASE
+      - POSTGRES_PASSWORD=$MAYBE_POSTGRES_PASSWORD
+      - POSTGRES_USER=$MAYBE_POSTGRES_USER
+      - POSTGRES_DB=$MAYBE_POSTGRES_DB
+      - POSTGRES_HOST=$MAYBE_POSTGRES_HOST
+      - SELF_HOSTED=$MAYBE_SELF_HOSTED
+      - RAILS_FORCE_SSL=$MAYBE_RAILS_FORCE_SSL
+      - RAILS_ASSUME_SSL=$MAYBE_ASSUME_SSL
+      - DB_HOST=$MAYBE_DB_HOST
+      - DB_PORT=$MAYBE_DB_PORT
+      - REDIS_URL=$MAYBE_REDIS_URL
+
+  maybe_redis:
+    image: redis:latest
+    hostname: maybe_redis
+    container_name: maybe_redis
+    security_opt:
+      - no-new-privileges:true
+    #profiles: ["apps", "all", "finance"]
+    networks:
+      - maybe
+      - socket_proxy
+      #- t3_proxy
+    ports:
+      - 6379:6379
+    restart: unless-stopped
+    volumes:
+      - $DOCKERDIR/appdata/maybe/redis/data:/data
+
+networks:
+  maybe:
+    driver: bridge

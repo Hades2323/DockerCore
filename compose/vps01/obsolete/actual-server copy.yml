@@ -1,0 +1,57 @@
+services:
+  # Firefly III - Personal Finance Manager
+  firefly:
+    image: fireflyiii/core:latest
+    container_name: firefly
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    #profiles: ["apps", "all"]
+    networks:
+      - t3_proxy
+    ports:
+      - 8088:8080
+    volumes:
+      - $DOCKERDIR/appdata/firefly:/var/www/html/storage/upload
+    env_file: $DOCKERDIR/appdata/firefly/firefly.env
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.firefly-rtr.entrypoints=websecure"
+      - "traefik.http.routers.firefly-rtr.rule=Host(`firefly.$DOMAINNAME_00`)"
+      # Middlewares
+      - "traefik.http.routers.firefly-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
+      # HTTP Services
+      - "traefik.http.routers.firefly-rtr.service=firefly-svc"
+      - "traefik.http.services.firefly-svc.loadbalancer.server.port=8080"
+
+  importer:
+    image: fireflyiii/data-importer:latest
+    container_name: firefly_importer
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    #profiles: ["apps", "all"]
+    networks:
+      - t3_proxy
+    ports:
+      - '8089:8080'
+    depends_on:
+      - firefly
+    env_file: $DOCKERDIR/appdata/firefly/importer.env
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.firefly-importer-rtr.entrypoints=websecure"
+      - "traefik.http.routers.firefly-importer-rtr.rule=Host(`importer.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.firefly-importer-rtr.service=firefly-importer-svc"
+      - "traefik.http.services.firefly-importer-svc.loadbalancer.server.port=8080"

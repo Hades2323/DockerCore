@@ -142,6 +142,8 @@ include:
   - compose/$HOSTNAME/homepage.yml
   #- compose/$HOSTNAME/sitespeed.yml
   #- compose/$HOSTNAME/whoami.yml
+  #- compose/$HOSTNAME/homarr.yml
+  #- compose/$HOSTNAME/dashy.yml
 
 
   ################################
@@ -154,6 +156,11 @@ include:
   #- compose/$HOSTNAME/openwebui.yml
   #- compose/$HOSTNAME/mattermost.yml
   #- compose/$HOSTNAME/dockermailserver.yml
+
+  ########## PERSONAL FINANCE ##########
+  #- compose/$HOSTNAME/actual-server.yml
+  #- compose/$HOSTNAME/firefly.yml
+  #- compose/$HOSTNAME/maybe.yml
 
 
 
@@ -193,6 +200,8 @@ include:
   #- compose/$HOSTNAME/metube.yml
   #- compose/$HOSTNAME/semaphore.yml
   #- compose/$HOSTNAME/filebrowser.yml
+  #- compose/$HOSTNAME/pwpush.yml
+  #- compose/$HOSTNAME/rustdesk.yml
 
   ################################
   ######## NETWORK ########
@@ -252,6 +261,9 @@ include:
   ######## COMPLEMENTARY APPS ########
   ################################
   #- compose/$HOSTNAME/picard.yml
+  #- compose/$HOSTNAME/recipya.yml
+  #- compose/$HOSTNAME/tamari.yml
+  #- compose/$HOSTNAME/grocy.yml
 
 
   ################################

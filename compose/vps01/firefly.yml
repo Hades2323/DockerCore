@@ -1,57 +1,99 @@
+# firefly Your personal Finances https://firefly-iii.org/
+#
+# The Firefly III Data Importer will ask you for the Firefly III URL and a "Client ID".
+# You can generate the Client ID at http://localhost/profile (after registering)
+# The Firefly III URL is: http://app:8080
+#
+# Other URL's will give 500 | Server Error
+#
 services:
-  # Firefly III - Personal Finance Manager
-  firefly:
+  firefly_core:
     image: fireflyiii/core:latest
-    container_name: firefly
+    container_name: firefly_core
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
-    #profiles: ["apps", "all"]
+    #profiles: ["apps", "all", "finance"]
+    depends_on:
+      - postgres
+    links:
+      - postgres
     networks:
       - t3_proxy
+      - socket_proxy
+      #- firefly
     ports:
-      - 8088:8080
+      - 52384:8080
+    #profiles: ["apps", "all"]
+    env_file: $DOCKERDIR/appdata/firefly/.env
     volumes:
-      - $DOCKERDIR/appdata/firefly:/var/www/html/storage/upload
-    env_file: $DOCKERDIR/appdata/firefly/firefly.env
+      - $DOCKERDIR/appdata/firefly/upload:/var/www/html/storage/upload
     labels:
       - "traefik.enable=true"
       # HTTP Routers
       - "traefik.http.routers.firefly-rtr.entrypoints=websecure"
       - "traefik.http.routers.firefly-rtr.rule=Host(`firefly.$DOMAINNAME_00`)"
       # Middlewares
-      - "traefik.http.routers.firefly-rtr.middlewares=chain-no-auth@file" # chain-oauth@file for oauth
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.firefly-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.firefly-rtr.service=firefly-svc"
       - "traefik.http.services.firefly-svc.loadbalancer.server.port=8080"
-
   importer:
     image: fireflyiii/data-importer:latest
-    container_name: firefly_importer
-    security_opt:
-      - no-new-privileges:true
+    hostname: importer
     restart: unless-stopped
-    #profiles: ["apps", "all"]
+    #profiles: ["apps", "all", "finance"]
+    container_name: firefly_iii_importer
     networks:
+      - firefly
+      - socket_proxy
       - t3_proxy
     ports:
-      - '8089:8080'
+      - '56881:8080'
     depends_on:
-      - firefly
-    env_file: $DOCKERDIR/appdata/firefly/importer.env
+      - firefly_core
+    env_file: $DOCKERDIR/appdata/firefly/.importer.env
     labels:
       - "traefik.enable=true"
       # HTTP Routers
       - "traefik.http.routers.firefly-importer-rtr.entrypoints=websecure"
-      - "traefik.http.routers.firefly-importer-rtr.rule=Host(`importer.$DOMAINNAME_00`)"
+      - "traefik.http.routers.firefly-importer-rtr.rule=Host(`importer.firefly.$DOMAINNAME_00`)"
       # Middlewares
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
-      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.firefly-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.firefly-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
-      - "traefik.http.routers.firefly-importer-rtr.service=firefly-importer-svc"
+      - "traefik.http.routers.firefly-importer-rtr.service=firefly-svc"
       - "traefik.http.services.firefly-importer-svc.loadbalancer.server.port=8080"
+  firefly_cron:
+    # To make this work, set STATIC_CRON_TOKEN in your .env file or as an environment variable and replace REPLACEME below
+    # The STATIC_CRON_TOKEN must be *exactly* 32 characters long
+    image: alpine
+    restart: unless-stopped
+    #profiles: ["apps", "all", "finance"]
+    depends_on:
+      - firefly_core
+    container_name: firefly_cron
+    command: sh -c "
+      apk add tzdata
+      && ln -s /usr/share/zoneinfo/${TZ} /etc/localtime
+      | echo \"0 3 * * * wget -qO- http://firefly_core:8080/api/v1/cron/SzaTMXFdfshcgmWk33WYoF3a1KyPr9Be;echo\" 
+      | crontab - 
+      && crond -f -L /dev/stdout"
+    networks:
+      - firefly
+      - socket_proxy
+      - t3_proxy
+networks:
+  firefly:
+    driver: bridge

@@ -68,6 +68,14 @@ sudo ufw allow 443/udp
 # Allow connections to qbitorrent
 sudo ufw allow 54321/tcp
 sudo ufw allow 54321/udp
+# Allow connections to rustdesk
+#sudo ufw allow 21114/tcp #used for web console, only available in Pro version hbbs
+sudo ufw allow 21115/tcp #relay ports used for the NAT type test hbbs
+sudo ufw allow 21116/tcp #relay ports is used for TCP hole punching and connection service hbbs
+sudo ufw allow 21117/tcp #relay service hbbr 
+sudo ufw allow 21118/tcp #WebSocket ports used to support web clients hbbs
+sudo ufw allow 21119/tcp #WebSocket ports used to support web clients hbbr
+sudo ufw allow 21116/udp #relay ports used for the ID registration and heartbeat service
 # Allow connections to Lyrion Music Server (if needed)
 #sudo ufw allow 9090/tcp
 #sudo ufw allow 3483/tcp

@@ -1,0 +1,37 @@
+services:
+  # dashy - Application Dashboard
+  dashy:
+    image: lissy93/dashy
+    container_name: dashy
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    #profiles: ["apps", "all"]
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - "4000:8080"
+    volumes:
+      - $DOCKERDIR/appdata/dashy/config.yml:/app/user-data/conf.yml
+      - $DOCKERDIR/appdata/dashy/item-icons:/app/user-data/item-icons/
+    environment:
+      TZ: $TZ
+      UID: $PUID
+      GID: $PGID
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.dashy-rtr.entrypoints=websecure"
+      - "traefik.http.routers.dashy-rtr.rule=Host(`dashy.$DOMAINNAME_00`) || Host(`www.dashy.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.dashy-rtr.service=dashy-svc"
+      - "traefik.http.services.dashy-svc.loadbalancer.server.port=8080"
