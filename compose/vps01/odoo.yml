@@ -1,0 +1,46 @@
+# odoo ERP system
+services:
+  odoo:
+    image: odoo
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - "8069:8069"
+    volumes:
+      - $DOCKERDIR/appdata/odoo/data:/var/lib/odoo
+      - $DOCKERDIR/appdata/odoo/config:/etc/odoo
+      - $DOCKERDIR/appdata/odoo/addons:/mnt/extra-addons
+    environment:
+      - USER=$ODOO_USER
+      - PASSWORD=$ODOO_PASSWORD
+      #- PASSWORD_FILE=$ODOO_PASSWORD_FILE
+      - POSTGRES_DB=$ODOO_POSTGRES_DB
+      #- POSTGRES_PASSWORD_FILE=$ODOO_POSTGRES_PASSWORD_FILE
+      - POSTGRES_USER=$ODOO_POSTGRES_USER
+      - POSTGRES_PASSWORD=$ODOO_POSTGRES_PASSWORD
+      - POSTGRES_HOST=$ODOO_POSTGRES_HOST
+      #- PGDATA=$ODOO_PGDATA
+    secrets:
+      - odoo_postgresql_password
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.odoo-rtr.entrypoints=websecure"
+      - "traefik.http.routers.odoo-rtr.rule=Host(`odoo.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.odoo-rtr.service=odoo-svc"
+      - "traefik.http.services.odoo-svc.loadbalancer.server.port=8069"

@@ -1,0 +1,65 @@
+# Mattermost Docker Compose file
+# This file is used to deploy Mattermost with Docker Compose.
+services:
+  mattermost:
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    image: mattermost/mattermost:latest
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    container_name: mattermost
+    hostname: mattermost
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - 8065:8065 # Mattermost port
+      - 8067:8067 # Mattermost WebSocket port
+      - 8443:8443/udp
+      - 8443:8443/tcp
+    pids_limit: 200
+    tmpfs:
+      - /tmp
+    volumes:
+      - ${MATTERMOST_CONFIG_PATH}:/mattermost/config:rw
+      - ${MATTERMOST_DATA_PATH}:/mattermost/data:rw
+      - ${MATTERMOST_LOGS_PATH}:/mattermost/logs:rw
+      - ${MATTERMOST_PLUGINS_PATH}:/mattermost/plugins:rw
+      - ${MATTERMOST_CLIENT_PLUGINS_PATH}:/mattermost/client/plugins:rw
+      - ${MATTERMOST_BLEVE_INDEXES_PATH}:/mattermost/bleve-indexes:rw
+      # When you want to use SSO with GitLab, you have to add the cert pki chain of GitLab inside Alpine
+      # to avoid Token request failed: certificate signed by unknown authority 
+      # (link: https://github.com/mattermost/mattermost-server/issues/13059 and https://github.com/mattermost/docker/issues/34)
+      # - ${GITLAB_PKI_CHAIN_PATH}:/etc/ssl/certs/pki_chain.pem:ro
+    environment:
+      # timezone inside container
+      - TZ=${TZ}
+      # necessary for Mattermost to work with PostgreSQL
+      - POSTGRES_USER=$MM_POSTGRES_USER
+      - POSTGRES_PASSWORD=$MM_POSTGRES_PASSWORD
+      - POSTGRES_DB=$MM_POSTGRES_DB
+      - MM_SQLSETTINGS_DRIVERNAME=postgres
+      - MM_SQLSETTINGS_DATASOURCE=postgres://mattermost:${MM_POSTGRES_PASSWORD}@postgres:5432/mattermost?sslmode=disable&connect_timeout=10
+      # necessary for bleve
+      - MM_BLEVESETTINGS_INDEXDIR=${MATTERMOST_BLEVE_INDEXDIR}
+      # additional settings
+      - MM_SERVICESETTINGS_SITEURL=${MM_SERVICESETTINGS_SITEURL}
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.mattermost-rtr.entrypoints=websecure"
+      - "traefik.http.routers.mattermost-rtr.rule=Host(`mattermost.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.mattermost-rtr.service=mattermost-svc"
+      - "traefik.http.services.mattermost-svc.loadbalancer.server.port=8065"    

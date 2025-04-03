@@ -16,6 +16,7 @@ services:
       - "3306:3306"
     volumes:
       - $DOCKERDIR/appdata/mariadb/data:/config
+      - $DOCKERDIR/appdata/postgres/scripts:/docker-entrypoint-initdb.d
     environment:
       TZ: $TZ
       PUID: $PUID

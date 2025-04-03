@@ -74,6 +74,15 @@ services:
       # - --metrics.influxdb2.addServicesLabels=true
       # - --metrics.influxdb2.pushInterval=30s
       # - --metrics.influxdb2.additionallabels.host=$DOMAINNAME_00
+      # DMS mailserver ports you want to proxy:
+      #- --entryPoints.mail-smtp.address=:25
+      #- --entryPoints.mail-submission.address=:587
+      #- --entryPoints.mail-submissions.address=:465
+      #- --entryPoints.mail-imap.address=:143
+      #- --entryPoints.mail-imaps.address=:993
+      #- --entryPoints.mail-pop3.address=:110
+      #- --entryPoints.mail-pop3s.address=:995
+      #- --entryPoints.mail-managesieve.address=:4190
     #healthcheck:
     #  test: ["CMD", "traefik", "healthcheck", "--ping"]
     #  interval: 5s
@@ -91,6 +100,38 @@ services:
         published: 8080         # comment when tested and ready to deploy after staging phase
         protocol: tcp           # comment when tested and ready to deploy after staging phase
         mode: host              # comment when tested and ready to deploy after staging phase
+      #- target: 25 # SMTP Port # Publish external access ports
+      #  published: 25
+      #  protocol: tcp
+      #  mode: host
+      #- target: 587 # SMTP Port # Publish external access ports
+      #  published: 587
+      #  protocol: tcp
+      #  mode: host
+      #- target: 465 # SMTP Port # Publish external access ports
+      #  published: 465
+      #  protocol: tcp
+      #  mode: host
+      #- target: 143  # IMAP Port # Publish external access ports
+      #  published: 143
+      #  protocol: tcp
+      #  mode: host
+      #- target: 993 # IMAP Port # Publish external access ports
+      #  published: 993
+      #  protocol: tcp
+      #  mode: host
+      #- target: 110  # POP3 Port # Publish external access ports
+      #  published: 110
+      #  protocol: tcp
+      #  mode: host
+      #- target: 995  # POP3 Port # Publish external access ports
+      #  published: 995
+      #  protocol: tcp
+      #  mode: host
+      #- target: 4190   # Sieve Port # Publish external access ports
+      #  published: 4190
+      #  protocol: tcp
+      #  mode: host
     volumes:
       - $DOCKERDIR/appdata/traefik3/rules/$HOSTNAME:/rules # Dynamic File Provider directory
       # - /var/run/docker.sock:/var/run/docker.sock:ro # Enable if not using Socket Proxy

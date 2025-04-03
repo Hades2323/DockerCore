@@ -1,0 +1,48 @@
+services:
+  dms:
+    image: ghcr.io/docker-mailserver/docker-mailserver:latest
+    hostname: mail.$DOMAINNAME_00
+    container_name: dms
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - t3_proxy
+    ports:
+      - 25:25
+      - 587:587
+      - 465:465
+      - 143:143
+      - 993:993
+      - 110:110
+      - 995:995
+      - 4190:4190
+    volumes:
+      - $DOCKERDIR/appdata/dockermailserver/mail-data/:/var/mail/
+      - $DOCKERDIR/appdata/dockermailserver/mail-state/:/var/mail-state/
+      - $DOCKERDIR/appdata/dockermailserver/mail-logs/:/var/log/mail/
+      - $DOCKERDIR/appdata/dockermailserver/config/:/tmp/docker-mailserver/
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=$TZ
+      - ENABLE_RSPAMD=1
+      - ENABLE_CLAMAV=1
+      - ENABLE_FAIL2BAN=1
+    labels:
+      - traefik.enable=true
+      # These are examples, configure the equivalent for any additional ports you proxy.
+      # Explicit TLS (STARTTLS):
+      - traefik.tcp.routers.mail-smtp.rule=HostSNI(`*`)
+      - traefik.tcp.routers.mail-smtp.entrypoints=smtp
+      - traefik.tcp.routers.mail-smtp.service=smtp
+      - traefik.tcp.services.mail-smtp.loadbalancer.server.port=25
+      - traefik.tcp.services.mail-smtp.loadbalancer.proxyProtocol.version=2
+      # Implicit TLS is no different, except for optional HostSNI support:
+      - traefik.tcp.routers.mail-submissions.rule=HostSNI(`*`)
+      - traefik.tcp.routers.mail-submissions.entrypoints=smtp-submissions
+      - traefik.tcp.routers.mail-submissions.service=smtp-submissions
+      - traefik.tcp.services.mail-submissions.loadbalancer.server.port=465
+      - traefik.tcp.services.mail-submissions.loadbalancer.proxyProtocol.version=2
+      # NOTE: Optionally match by SNI rule, this requires TLS passthrough (not compatible with STARTTLS):
+      #- traefik.tcp.routers.mail-submissions.rule=HostSNI(`mail.example.com`)
+      #- traefik.tcp.routers.mail-submissions.tls.passthrough=true

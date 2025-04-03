@@ -1,0 +1,40 @@
+# Calibre-Web using Docker.
+services:
+  calibre-web:
+    image: lscr.io/linuxserver/calibre-web:latest
+    container_name: calibre-web
+    security_opt:
+      - no-new-privileges:true
+    restart: unless-stopped
+    networks:
+      - t3_proxy
+    ports:
+      - 8083:8083
+    #profiles: ["apps", "all"]
+    #depends_on:
+    #  - calibre
+    environment:
+      - PUID=$PUID
+      - PGID=$PGID
+      - TZ=$TZ
+      - DOCKER_MODS=linuxserver/mods:universal-calibre #optional
+      - OAUTHLIB_RELAX_TOKEN_SCOPE=1 #optional
+    volumes:
+      - $DOCKERDIR/APPDATA/calibre-web/data:/config
+      - $BOOKS_DIR:/books:/books
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.calibre-web-rtr.entrypoints=websecure"
+      - "traefik.http.routers.calibre-web-rtr.rule=Host(`calibre-web.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.calibre-web-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.calibre-web-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.calibre-web-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.calibre-web-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.calibre-web-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.calibre-web-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.calibre-web-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.calibre-web-rtr.service=calibre-web-svc"
+      - "traefik.http.services.calibre-web-svc.loadbalancer.server.port=8083"

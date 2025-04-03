@@ -11,6 +11,8 @@ services:
       - t3_proxy
       - socket_proxy
     ports:
+      - 10000:10000
+      - 9090:9090
       - "52226:22"
     #  - "80:80"
     #  - "443:443"
@@ -36,4 +38,4 @@ services:
       # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.ubuntu-rtr.service=ubuntu-svc"
-      - "traefik.http.services.ubuntu-svc.loadbalancer.server.port=22"
+      - "traefik.http.services.ubuntu-svc.loadbalancer.server.port=9090"
