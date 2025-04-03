@@ -1,11 +1,32 @@
 #!/bin/bash
 
-# install sudo
-apt-get update
-apt-get install -y sudo
+# This script is intended to be run on a fresh debian server installation.
+# It performs the following tasks:
+
+# Define variables
+DOCKER_CORE_PATH="/opt/docker/core"
+SSH_PORT=55222
+NEW_DOCKER_CORE_PATH=$DOCKER_CORE_PATH
+
+# Check if sudo is installed, otherwise install it
+if ! command -v sudo &> /dev/null; then
+    echo "sudo is not installed. Installing sudo..."
+    apt-get update
+    apt-get install -y sudo
+else
+    echo "sudo is already installed."
+fi
 
 #Create a New User
-sudo adduser apps
+if sudo adduser apps; then
+    sudo adduser apps sudo
+else
+    echo "Failed to create the 'apps' user. Exiting."
+    exit 1
+fi
+else
+    sudo adduser apps
+fi
 sudo adduser apps sudo
 
 #Update the OS
@@ -60,7 +81,7 @@ sudo ufw allow from 192.168.0.0/16
 # Allow connections from the Tailscale network (default range)
 sudo ufw allow from 100.64.0.0/10
 # Allow SSH connections
-sudo ufw allow 55222/tcp
+sudo ufw allow ${SSH_PORT}/tcp
 # Allow HTTP and HTTPS connections
 sudo ufw allow 80/tcp
 sudo ufw allow 443/tcp
@@ -103,11 +124,24 @@ sudo ufw allow 853/tcp
 #sudo ufw allow 80/udp
 # Allow connections to the Docker Host Network (if needed)
 #sudo ufw allow 443/udp
-# Allow connections to the Docker Macvlan Network (if needed)
+# Display the current firewall rules for review
+sudo ufw show added
+
+# Prompt the user for confirmation before enabling the firewall
+read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
+if [[ "$CONFIRM" == "yes" ]]; then
+    sudo ufw enable
+else
+    echo "Firewall enabling aborted."
+fi
 #sudo ufw allow 80/tcp
 # Enable the firewall
-sudo ufw enable
-# Check the status of the firewall
+# Change the SSH port from 22 to 55222
+if grep -q "^Port " /etc/ssh/sshd_config; then
+    sudo sed -i "s/^Port .*/Port ${SSH_PORT}/" /etc/ssh/sshd_config
+else
+    echo "Port ${SSH_PORT}" | sudo tee -a /etc/ssh/sshd_config
+fi
 sudo ufw status verbose # This should show the rules we just added
 
 #######################################
@@ -116,7 +150,7 @@ sudo ufw status verbose # This should show the rules we just added
 # Backup the original sshd_config file
 sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 # Change the SSH port from 22 to 55222
-sudo sed -i 's/#Port 22/Port 55222/' /etc/ssh/sshd_config
+sudo sed -i "s/#Port 22/Port ${SSH_PORT}/" /etc/ssh/sshd_config
 # Restart the SSH service to apply the changes
 sudo systemctl restart ssh
 
@@ -129,58 +163,70 @@ sudo adduser apps docker # add user to docker group
 sudo systemctl enable docker
 sudo systemctl start docker
 
-# Create the docker folder
-sudo mkdir -p /opt/docker/core
+# Check if the docker folder already exists
+if [ ! -d "$DOCKER_CORE_PATH" ]; then
+    # Create the docker folder
+    sudo mkdir -p "$DOCKER_CORE_PATH"
+else
+    echo "The folder $DOCKER_CORE_PATH already exists."
+fi
+
+# Check if the destination folder is empty
+if [ "$(ls -A $DOCKER_CORE_PATH 2>/dev/null)" ]; then
+    echo "Error: The destination folder $DOCKER_CORE_PATH must be empty."
+    exit 1
+fi
 
 # Clone the repository into the specified folder
-sudo git clone https://github.com/Hades2323/DockerCore.git /opt/docker/core
+sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"
 
 # Set the ownership of the cloned repository to the 'apps' user
-sudo chown -R apps:apps /opt/docker/core
+sudo chown -R apps:apps "$DOCKER_CORE_PATH"
 
 # Create log folder for traefik 3
-sudo mkdir -p /opt/docker/core/logs/$(hostname)/traefik
+sudo mkdir -p "$DOCKER_CORE_PATH/logs/$(hostname)/traefik"
 
-# secure the secrets folder and .env file
-sudo chown root:root /opt/docker/core/secrets
-sudo chmod 600 /opt/docker/core/secrets
-sudo chown root:root /opt/docker/core/.env
-sudo chmod 600 /opt/docker/core/.env
+# Secure the secrets folder and .env file
+sudo chown root:root "$DOCKER_CORE_PATH/secrets"
+sudo chmod 600 "$DOCKER_CORE_PATH/secrets"
+sudo chown root:root "$DOCKER_CORE_PATH/.env"
+sudo chmod 600 "$DOCKER_CORE_PATH/.env"
 
-# Set the acl for the docker folder
-sudo chmod 775 /opt/docker/core
-sudo setfacl -Rdm u:apps:rwx /opt/docker/core
-sudo setfacl -Rm u:apps:rwx /opt/docker/core
-sudo setfacl -Rdm g:docker:rwx /opt/docker/core
-sudo setfacl -Rm g:docker:rwx /opt/docker/core
+# Set the ACL for the docker folder
+sudo chmod 775 "$DOCKER_CORE_PATH"
+sudo setfacl -Rdm u:apps:rwx "$DOCKER_CORE_PATH"
+sudo setfacl -Rm u:apps:rwx "$DOCKER_CORE_PATH"
+sudo setfacl -Rdm g:docker:rwx "$DOCKER_CORE_PATH"
+sudo setfacl -Rm g:docker:rwx "$DOCKER_CORE_PATH"
 
-sudo cp /opt/docker/core/docker-compose-vps01.yml /opt/docker/core/docker-compose-$(hostname).yml
-sudo cp -r /opt/docker/core/appdata/traefik3/rules/vps01/ /opt/docker/core/appdata/traefik3/rules/$(hostname)
-sudo cp -r /opt/docker/core/logs/vps01/ /opt/docker/core/logs/$(hostname)
-sudo cp -r /opt/docker/core/compose/vps01/ /opt/docker/core/compose/$(hostname)
-sudo chmod 600 /opt/docker/core/appdata/traefik3/acme/acme.json
-sudo chmod +x /opt/docker/core/appdata/postgresql/script/*
-sudo chmod +x /opt/docker/core/appdata/mariadb/script/*
+sudo mv "$DOCKER_CORE_PATH/docker-compose-vps01.yml" "$DOCKER_CORE_PATH/docker-compose-$(hostname).yml"
+sudo mv "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" "$DOCKER_CORE_PATH/appdata/traefik3/rules/$(hostname)"
+sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"
+sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"
+sudo chmod 600 "$DOCKER_CORE_PATH/appdata/traefik3/acme/acme.json"
+sudo chmod +x "$DOCKER_CORE_PATH/appdata/postgresql/script/*"
+sudo chmod +x "$DOCKER_CORE_PATH/appdata/mariadb/script/*"
+sudo find "$DOCKER_CORE_PATH" -type f -name "*.sh" -exec chmod +x {} \;
 
-# mattermost default uid and gid is 2000
+# Mattermost default UID and GID is 2000
 # Set the ownership of the mattermost folder to the 'apps' user and group
-sudo chown -R 2000:2000 /opt/docker/core/appdata/mattermost
+sudo chown -R 2000:2000 "$DOCKER_CORE_PATH/appdata/mattermost"
 
 # Get the UID and GID of the 'apps' user and group
 APPS_UID=$(id -u apps)
 APPS_GID=$(id -g apps)
 # Insert the UID and GID into the .env file
-sudo sed -i "s/^PUID=.*/PUID=$APPS_UID/" /opt/docker/core/.env
-sudo sed -i "s/^PGID=.*/PGID=$APPS_GID/" /opt/docker/core/.env
+sudo sed -i "s/^PUID=.*/PUID=$APPS_UID/" "$DOCKER_CORE_PATH/.env"
+sudo sed -i "s/^PGID=.*/PGID=$APPS_GID/" "$DOCKER_CORE_PATH/.env"
 # Insert the hostname into the .env file
-sudo sed -i "s/^HOSTNAME=.*/HOSTNAME=$(hostname)/" /opt/docker/core/.env
+sudo sed -i "s/^HOSTNAME=.*/HOSTNAME=$(hostname)/" "$DOCKER_CORE_PATH/.env"
 
 
 #######################################
 ########## Secure SSH Access ##########
 #######################################
 # Fail2ban is a service that automatically blocks IP addresses that have too many failed login attempts
-sudo ln /opt/docker/core/appdata/fail2ban/jail.local /etc/fail2ban/jail.local
+sudo ln "$DOCKER_CORE_PATH/appdata/fail2ban/jail.local" /etc/fail2ban/jail.local
 sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
 
@@ -193,37 +239,45 @@ echo -e "Create user and password for traefik basic auth: "
 read -p "Enter username: " HTTP_USERNAME
 read -sp "Enter password: " HTTP_PASSWORD
 echo
-sudo htpasswd -cBb /opt/docker/core/secrets/basic_auth_credentials "$HTTP_USERNAME" "$HTTP_PASSWORD"
+sudo htpasswd -cBb "$DOCKER_CORE_PATH/secrets/basic_auth_credentials" "$HTTP_USERNAME" "$HTTP_PASSWORD"
 
 # Create the secret for root mariadb user
 echo -e "Create root mariadb user password: "
 read -sp "Enter password: " MARIADB_ROOT_PASSWORD
 echo
-echo "$MARIADB_ROOT_PASSWORD" | sudo tee /opt/docker/core/secrets/mysql_root_password
+echo "$MARIADB_ROOT_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/mysql_root_password"
 
 # Create the secret for postgres user
 echo -e "Create postgres user password: "
 read -sp "Enter password: " POSTGRES_ROOT_PASSWORD
 echo
-echo "$POSTGRES_ROOT_PASSWORD" | sudo tee /opt/docker/core/secrets/postgres_root_password
+echo "$POSTGRES_ROOT_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/postgres_root_password"
 
 # Create the secret for vnc password
 echo -e "Create vnc password: "
 read -sp "Enter password: " VNC_PASSWORD
 echo
-echo "$VNC_PASSWORD" | sudo tee /opt/docker/core/secrets/vnc_password
+echo "$VNC_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/vnc_password"
+
+# Check if DOCKER_CORE_PATH is not /opt/docker/core
+if [ "$DOCKER_CORE_PATH" != "/opt/docker/core" ]; then
+    # Replace all occurrences of /opt/docker/core with the new path in all files within the DOCKER_CORE_PATH folder and subfolders
+    find "$DOCKER_CORE_PATH" -type f -exec sed -i "s|/opt/docker/core|$DOCKER_CORE_PATH|g" {} +
+    echo "All occurrences of '/opt/docker/core' have been replaced with '$DOCKER_CORE_PATH' in the DOCKER_CORE_PATH folder and subfolders."
+fi
+
 
 echo -e "=============================================================================================================================================================
 \n=============================================================================================================================================================
 \n
 \n All done,
-\n SSH port 55222,
+\n SSH port $SSH_PORT,
 \n set variables in .env file,
 \n comment/uncomment docker-compose-$(hostname).yml
-\n and set secrets files in /opt/docker/core/secrets
+\n and set secrets files in $DOCKER_CORE_PATH/secrets
 \n
 \n execute
-\n sudo docker compose -f /opt/docker/core/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs up -d
+\n sudo docker compose -f $DOCKER_CORE_PATH/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs --profile finance up -d
 \n=============================================================================================================================================================
 \n============================================================================================================================================================="
 
