@@ -148,6 +148,8 @@ sudo ufw allow 853/tcp
 #sudo ufw allow 8080/udp
 # Allow connections to the Docker Bridge Network (if needed)
 #sudo ufw allow 80/udp
+# Display the current firewall rules for review
+sudo ufw show added
 while true; do
     read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
     CONFIRM=$(echo "$CONFIRM" | tr '[:upper:]' '[:lower:]')
@@ -158,8 +160,7 @@ while true; do
     fi
 done
 #sudo ufw allow 443/udp
-# Display the current firewall rules for review
-sudo ufw show added
+
 
 # Prompt the user for confirmation before enabling the firewall
 read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
