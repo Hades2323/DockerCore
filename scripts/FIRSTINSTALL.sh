@@ -24,8 +24,6 @@ else
     echo "Failed to create the 'apps' user. Exiting."
     exit 1
 fi
-else
-    sudo adduser apps
 fi
 sudo adduser apps sudo
 
@@ -37,7 +35,14 @@ sudo apt upgrade -y
 #zip and unzip are for compression, net-tools is to check port usage and availability, htop provides a nice UI to see running processes, and ncdu helps visualize disk space usage.#
 sudo apt install -y ca-certificates curl gnupg lsb-release htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ufw fail2ban ntp network-manager openssh
 
-#Perform Server Tweaks
+# Install essential tools and certificates
+sudo apt install -y ca-certificates curl gnupg lsb-release apt-transport-https
+
+# Install system monitoring and management tools
+sudo apt install -y htop zip unzip net-tools ncdu apache2-utils git acl
+
+# Install security and networking tools
+sudo apt install -y ufw fail2ban ntp network-manager openssh
 #A few system configuration tweaks to enhance the performance and handling of large list of files (e.g. Plex/Jellyfin metadata)
 # Add the following lines to the end of /etc/sysctl.conf
 echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
@@ -129,23 +134,21 @@ sudo ufw show added
 
 # Prompt the user for confirmation before enabling the firewall
 read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
-if [[ "$CONFIRM" == "yes" ]]; then
-    sudo ufw enable
-else
-    echo "Firewall enabling aborted."
-fi
-#sudo ufw allow 80/tcp
-# Enable the firewall
-# Change the SSH port from 22 to 55222
+#######################################
+########## Secure SSH Access ##########
+#######################################
+# Backup the original sshd_config file
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+# Change the SSH port from 22 to the specified port
 if grep -q "^Port " /etc/ssh/sshd_config; then
     sudo sed -i "s/^Port .*/Port ${SSH_PORT}/" /etc/ssh/sshd_config
 else
     echo "Port ${SSH_PORT}" | sudo tee -a /etc/ssh/sshd_config
 fi
+# Restart the SSH service to apply the changes
+sudo systemctl restart ssh
+# Display the current firewall rules for review
 sudo ufw status verbose # This should show the rules we just added
-
-#######################################
-########## Secure SSH Access ##########
 #######################################
 # Backup the original sshd_config file
 sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
@@ -178,7 +181,10 @@ if [ "$(ls -A $DOCKER_CORE_PATH 2>/dev/null)" ]; then
 fi
 
 # Clone the repository into the specified folder
-sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"
+if ! sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
+    echo "Error: Failed to clone the repository. Please check your internet connection or the repository URL."
+    exit 1
+fi
 
 # Set the ownership of the cloned repository to the 'apps' user
 sudo chown -R apps:apps "$DOCKER_CORE_PATH"
@@ -226,7 +232,7 @@ sudo sed -i "s/^DOMAINNAME_00=.*/DOMAINNAME_00=$PUBLIC_DOMAIN/" "$DOCKER_CORE_PA
 
 
 #######################################
-########## Secure SSH Access ##########
+sudo ln -s "$DOCKER_CORE_PATH/appdata/fail2ban/jail.local" /etc/fail2ban/jail.local
 #######################################
 # Fail2ban is a service that automatically blocks IP addresses that have too many failed login attempts
 sudo ln "$DOCKER_CORE_PATH/appdata/fail2ban/jail.local" /etc/fail2ban/jail.local
@@ -301,18 +307,33 @@ if [ "$DOCKER_CORE_PATH" != "/opt/docker/core" ]; then
     echo "All occurrences of '/opt/docker/core' have been replaced with '$DOCKER_CORE_PATH' in the DOCKER_CORE_PATH folder and subfolders."
 fi
 
+# Create the compose-up.sh script
+COMPOSE_UP_SCRIPT="$DOCKER_CORE_PATH/compose-up.sh"
+echo "#!/bin/bash" | sudo tee "$COMPOSE_UP_SCRIPT"
+echo "sudo docker compose -f $DOCKER_CORE_PATH/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs --profile finance up -d" | sudo tee -a "$COMPOSE_UP_SCRIPT"
+# Make the script executable
+sudo chmod +x "$COMPOSE_UP_SCRIPT"
+
+# Get the public IP address of the server
+PUBLIC_IP=$(curl -s checkip.amazonaws.com)
 
 echo -e "=============================================================================================================================================================
 \n=============================================================================================================================================================
 \n
 \n All done,
-\n SSH port $SSH_PORT,
-\n set variables in .env file,
+\n SSH port: $SSH_PORT
+\n $(tput bold)$(tput setaf 2)ssh apps@$PUBLIC_IP -p $SSH_PORT$(tput sgr0)
+\n set variables in $DOCKER_CORE_PATH/.env file
 \n comment/uncomment docker-compose-$(hostname).yml
-\n and set secrets files in $DOCKER_CORE_PATH/secrets
+\n verify or/and set secrets files in $DOCKER_CORE_PATH/secrets
+\n the most important is the **cloudflare api token** $DOCKER_CORE_PATH/secrets/cf_dns_api_token , the other ones is sets by the script 
+\n create an api token in your cloudflare account with the following permissions:
+\n - **Zone:DNS:Edit**  for your domain $PUBLIC_DOMAIN
+\n - **Zone:Zone:Read**  for your domain $PUBLIC_DOMAIN
 \n
 \n execute
-\n sudo docker compose -f $DOCKER_CORE_PATH/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs --profile finance up -d
+\n **sudo ./$COMPOSE_UP_SCRIPT**
+\n to start the containers
 \n=============================================================================================================================================================
 \n============================================================================================================================================================="
 
