@@ -220,15 +220,10 @@ else
     echo "GitHub is reachable. Proceeding with the script."
 fi
 
-if curl -sL --head https://github.com/Hades2323/DockerCore.git | grep "200 OK" &> /dev/null; then
-    if sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
-        echo "Repository cloned successfully into $DOCKER_CORE_PATH."
-    else
-        echo "Error: Failed to clone the repository. Please check your internet connection or verify the repository URL is valid and accessible."
-        exit 1
-    fi
+if sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
+    echo "Repository cloned successfully into $DOCKER_CORE_PATH"
 else
-    echo "Error: Repository URL is invalid or inaccessible. Please verify the URL."
+    echo "Error: Failed to clone the repository. Please check your internet connection or verify the repository URL is valid and accessible."
     exit 1
 fi
 
