@@ -17,37 +17,38 @@ else
     echo "sudo is already installed."
 fi
 
-#Create a New User
+# This script creates a new user named 'apps' and adds it to the 'sudo' group.
+# The 'apps' user is intended to be used for executing containers.
+# During the execution of this script, you will be prompted to set a password for the 'apps' user.
+# If the user creation fails, the script will exit with an error message.
+# Create a New User apps
+echo -e "\e[1;32mCreating a new user named 'apps' and adding it to the 'sudo' group. Insert password for the user 'apps'\e[0m"
 if sudo adduser apps; then
     sudo adduser apps sudo
+    echo "User 'apps' created and added to the 'sudo' group successfully."
 else
     echo "Failed to create the 'apps' user. Exiting."
     exit 1
 fi
-fi
-sudo adduser apps sudo
 
 #Update the OS
 sudo apt update
 sudo apt upgrade -y
 
 #Install the Required Packages
-#zip and unzip are for compression, net-tools is to check port usage and availability, htop provides a nice UI to see running processes, and ncdu helps visualize disk space usage.#
-sudo apt install -y ca-certificates curl gnupg lsb-release htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ufw fail2ban ntp network-manager openssh
-
-# Install essential tools and certificates
-sudo apt install -y ca-certificates curl gnupg lsb-release apt-transport-https
-
+#sudo apt install -y ca-certificates curl gnupg lsb-release htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ufw fail2ban ntp network-manager openssh python3 python3-pip python3-venv
+# Uncomment the line above to install all packages at once. Below is an explanation of the packages:
+# Required for downloading and verifying software packages.
+sudo apt install -y ca-certificates curl gnupg lsb-release apt-transport-https python3 python3-pip python3-venv
 # Install system monitoring and management tools
 sudo apt install -y htop zip unzip net-tools ncdu apache2-utils git acl
-
 # Install security and networking tools
 sudo apt install -y ufw fail2ban ntp network-manager openssh
+
 #A few system configuration tweaks to enhance the performance and handling of large list of files (e.g. Plex/Jellyfin metadata)
-# Add the following lines to the end of /etc/sysctl.conf
-echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
-echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
-echo "fs.inotify.max_user_watches=262144" | sudo tee -a /etc/sysctl.conf
+grep -q "^vm.swappiness=10$" /etc/sysctl.conf || echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
+grep -q "^vm.vfs_cache_pressure=50$" /etc/sysctl.conf || echo "vm.vfs_cache_pressure=50" | sudo tee -a /etc/sysctl.conf
+grep -q "^fs.inotify.max_user_watches=262144$" /etc/sysctl.conf || echo "fs.inotify.max_user_watches=262144" | sudo tee -a /etc/sysctl.conf
 # Apply the changes
 sudo sysctl -p
 
@@ -55,7 +56,15 @@ sudo sysctl -p
 ########## Hostname Configuration ##########
 ############################################
 # Prompt the user to input the new hostname
-read -p "Enter the new hostname: " NEW_HOSTNAME
+echo -e "\e[1;32mEnter the new hostname:\e[0m"
+while true; do
+    read -p "New hostname: " NEW_HOSTNAME
+    if [[ "$NEW_HOSTNAME" =~ ^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})*$ ]]; then
+        break
+    else
+        echo "Invalid hostname. Please enter a valid hostname (letters, numbers, hyphens, and dots only)."
+    fi
+done
 # Backup the current hostname files
 sudo cp /etc/hostname /etc/hostname.bak
 sudo cp /etc/hosts /etc/hosts.bak
@@ -76,11 +85,18 @@ echo "The hostname has been changed to: $(hostname)"
 sudo ufw default deny incoming
 # Allow all outgoing connections by default
 sudo ufw default allow outgoing
+sudo ufw status verbose # This should show the rules we just added
 # Allow all routed connections by default
 # This is necessary for Tailscale to work properly
-sudo ufw default allow routed
-# Allow connections from all private networks
-sudo ufw allow from 10.0.0.0/8
+# Validate SSH_PORT is a valid integer within the range 1-65535
+if ! [[ "$SSH_PORT" =~ ^[0-9]+$ ]] || [ "$SSH_PORT" -lt 1 ] || [ "$SSH_PORT" -gt 65535 ]; then
+    echo "Error: SSH_PORT must be a valid integer between 1 and 65535."
+    exit 1
+fi
+
+# Allow SSH connections
+sudo ufw allow ${SSH_PORT}/tcp
+# Removed duplicate rule to avoid redundancy
 sudo ufw allow from 172.16.0.0/12
 sudo ufw allow from 192.168.0.0/16
 # Allow connections from the Tailscale network (default range)
@@ -127,7 +143,15 @@ sudo ufw allow 853/tcp
 #sudo ufw allow 8080/udp
 # Allow connections to the Docker Bridge Network (if needed)
 #sudo ufw allow 80/udp
-# Allow connections to the Docker Host Network (if needed)
+while true; do
+    read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
+    CONFIRM=$(echo "$CONFIRM" | tr '[:upper:]' '[:lower:]')
+    if [[ "$CONFIRM" == "yes" || "$CONFIRM" == "no" ]]; then
+        break
+    else
+        echo "Invalid input. Please enter 'yes' or 'no'."
+    fi
+done
 #sudo ufw allow 443/udp
 # Display the current firewall rules for review
 sudo ufw show added
@@ -136,22 +160,15 @@ sudo ufw show added
 read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
 #######################################
 ########## Secure SSH Access ##########
-#######################################
 # Backup the original sshd_config file
 sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 # Change the SSH port from 22 to the specified port
 if grep -q "^Port " /etc/ssh/sshd_config; then
     sudo sed -i "s/^Port .*/Port ${SSH_PORT}/" /etc/ssh/sshd_config
-else
-    echo "Port ${SSH_PORT}" | sudo tee -a /etc/ssh/sshd_config
-fi
 # Restart the SSH service to apply the changes
 sudo systemctl restart ssh
-# Display the current firewall rules for review
 sudo ufw status verbose # This should show the rules we just added
 #######################################
-# Backup the original sshd_config file
-sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 # Change the SSH port from 22 to 55222
 sudo sed -i "s/#Port 22/Port ${SSH_PORT}/" /etc/ssh/sshd_config
 # Restart the SSH service to apply the changes
@@ -181,12 +198,17 @@ if [ "$(ls -A $DOCKER_CORE_PATH 2>/dev/null)" ]; then
 fi
 
 # Clone the repository into the specified folder
-if ! sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
-    echo "Error: Failed to clone the repository. Please check your internet connection or the repository URL."
+if ! ping -c 1 github.com &> /dev/null; then
+    echo "Error: Unable to reach GitHub. Please check your internet connection."
     exit 1
 fi
 
-# Set the ownership of the cloned repository to the 'apps' user
+if ! curl -s --head https://github.com/Hades2323/DockerCore.git | grep "200 OK" &> /dev/null; then
+    echo "Error: Repository URL is invalid or inaccessible. Please verify the URL."
+if ! sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
+    echo "Error: Failed to clone the repository. Please check your internet connection or verify the repository URL is valid and accessible."
+    exit 1
+fi
 sudo chown -R apps:apps "$DOCKER_CORE_PATH"
 
 # Create log folder for traefik 3
@@ -210,10 +232,36 @@ sudo mv "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" "$DOCKER_CORE_PATH/appd
 sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"
 sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"
 sudo chmod 600 "$DOCKER_CORE_PATH/appdata/traefik3/acme/acme.json"
-sudo chmod +x "$DOCKER_CORE_PATH/appdata/postgresql/script/*"
-sudo chmod +x "$DOCKER_CORE_PATH/appdata/mariadb/script/*"
-sudo find "$DOCKER_CORE_PATH" -type f -name "*.sh" -exec chmod +x {} \;
+if [ -f "$DOCKER_CORE_PATH/docker-compose-vps01.yml" ]; then
+    sudo mv "$DOCKER_CORE_PATH/docker-compose-vps01.yml" "$DOCKER_CORE_PATH/docker-compose-$(hostname).yml"
+else
+    echo "Warning: File $DOCKER_CORE_PATH/docker-compose-vps01.yml does not exist."
+fi
 
+if [ -d "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" ]; then
+    sudo mv "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" "$DOCKER_CORE_PATH/appdata/traefik3/rules/$(hostname)"
+else
+    echo "Warning: Directory $DOCKER_CORE_PATH/appdata/traefik3/rules/vps01 does not exist."
+fi
+
+if [ -d "$DOCKER_CORE_PATH/logs/vps01" ]; then
+    sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"
+else
+    echo "Warning: Directory $DOCKER_CORE_PATH/logs/vps01 does not exist."
+# Ask and validate the principal public domain name before inserting it into the .env file
+while true; do
+    read -p "Enter the principal public domain name: " PUBLIC_DOMAIN
+    if [[ "$PUBLIC_DOMAIN" =~ ^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z]{2,})+$ ]]; then
+        break
+    else
+        echo "Invalid domain name. Please enter a valid domain name (e.g., example.com)."
+    fi
+done
+sudo sed -i "s/^DOMAINNAME_00=.*/DOMAINNAME_00=$PUBLIC_DOMAIN/" "$DOCKER_CORE_PATH/.env"
+    sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"
+else
+    echo "Warning: Directory $DOCKER_CORE_PATH/compose/vps01 does not exist."
+fi
 # Mattermost default UID and GID is 2000
 # Set the ownership of the mattermost folder to the 'apps' user and group
 sudo chown -R 2000:2000 "$DOCKER_CORE_PATH/appdata/mattermost"
@@ -235,7 +283,6 @@ sudo sed -i "s/^DOMAINNAME_00=.*/DOMAINNAME_00=$PUBLIC_DOMAIN/" "$DOCKER_CORE_PA
 sudo ln -s "$DOCKER_CORE_PATH/appdata/fail2ban/jail.local" /etc/fail2ban/jail.local
 #######################################
 # Fail2ban is a service that automatically blocks IP addresses that have too many failed login attempts
-sudo ln "$DOCKER_CORE_PATH/appdata/fail2ban/jail.local" /etc/fail2ban/jail.local
 sudo systemctl enable fail2ban
 sudo systemctl start fail2ban
 
@@ -302,13 +349,25 @@ echo "$UMAMI_ADMIN_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/umami_admin_p
 
 # Check if DOCKER_CORE_PATH is not /opt/docker/core
 if [ "$DOCKER_CORE_PATH" != "/opt/docker/core" ]; then
-    # Replace all occurrences of /opt/docker/core with the new path in all files within the DOCKER_CORE_PATH folder and subfolders
-    find "$DOCKER_CORE_PATH" -type f -exec sed -i "s|/opt/docker/core|$DOCKER_CORE_PATH|g" {} +
-    echo "All occurrences of '/opt/docker/core' have been replaced with '$DOCKER_CORE_PATH' in the DOCKER_CORE_PATH folder and subfolders."
+if [ -f "$COMPOSE_UP_SCRIPT" ]; then
+    read -p "The file $COMPOSE_UP_SCRIPT already exists. Do you want to overwrite it? (yes/no): " OVERWRITE
+    OVERWRITE=$(echo "$OVERWRITE" | tr '[:upper:]' '[:lower:]')
+    if [[ "$OVERWRITE" != "yes" ]]; then
+        echo "Aborting creation of $COMPOSE_UP_SCRIPT."
+        exit 1
+    fi
+    # Backup the existing file
+    BACKUP_FILE="${COMPOSE_UP_SCRIPT}.bak.$(date +%Y%m%d%H%M%S)"
+    sudo cp "$COMPOSE_UP_SCRIPT" "$BACKUP_FILE"
+    echo "Existing file backed up as $BACKUP_FILE."
 fi
-
-# Create the compose-up.sh script
-COMPOSE_UP_SCRIPT="$DOCKER_CORE_PATH/compose-up.sh"
+    read -p "The file $COMPOSE_UP_SCRIPT already exists. Do you want to overwrite it? (yes/no): " OVERWRITE
+    OVERWRITE=$(echo "$OVERWRITE" | tr '[:upper:]' '[:lower:]')
+    if [[ "$OVERWRITE" != "yes" ]]; then
+        echo "Aborting creation of $COMPOSE_UP_SCRIPT."
+        exit 1
+    fi
+fi
 echo "#!/bin/bash" | sudo tee "$COMPOSE_UP_SCRIPT"
 echo "sudo docker compose -f $DOCKER_CORE_PATH/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs --profile finance up -d" | sudo tee -a "$COMPOSE_UP_SCRIPT"
 # Make the script executable
@@ -318,24 +377,29 @@ sudo chmod +x "$COMPOSE_UP_SCRIPT"
 PUBLIC_IP=$(curl -s checkip.amazonaws.com)
 
 echo -e "=============================================================================================================================================================
-\n=============================================================================================================================================================
-\n
-\n All done,
-\n SSH port: $SSH_PORT
-\n $(tput bold)$(tput setaf 2)ssh apps@$PUBLIC_IP -p $SSH_PORT$(tput sgr0)
-\n set variables in $DOCKER_CORE_PATH/.env file
-\n comment/uncomment docker-compose-$(hostname).yml
-\n verify or/and set secrets files in $DOCKER_CORE_PATH/secrets
-\n the most important is the **cloudflare api token** $DOCKER_CORE_PATH/secrets/cf_dns_api_token , the other ones is sets by the script 
-\n create an api token in your cloudflare account with the following permissions:
-\n - **Zone:DNS:Edit**  for your domain $PUBLIC_DOMAIN
-\n - **Zone:Zone:Read**  for your domain $PUBLIC_DOMAIN
-\n
-\n execute
-\n **sudo ./$COMPOSE_UP_SCRIPT**
-\n to start the containers
-\n=============================================================================================================================================================
-\n============================================================================================================================================================="
-
+tput bold; tput setaf 2
+echo "============================================================================================================================================================="
+echo "============================================================================================================================================================="
+echo ""
+echo "All done,"
+echo "SSH port: $SSH_PORT"
+echo "ssh apps@$PUBLIC_IP -p $SSH_PORT"
+echo ""
+echo "Set variables in $DOCKER_CORE_PATH/.env file"
+echo "Comment/uncomment docker-compose-$(hostname).yml"
+echo "Verify or/and set secrets files in $DOCKER_CORE_PATH/secrets"
+echo "The most important is the Cloudflare API token: $DOCKER_CORE_PATH/secrets/cf_dns_api_token. The other ones are set by the script."
+echo ""
+echo "Create an API token in your Cloudflare account with the following permissions:"
+echo "- Zone:DNS:Edit for your domain $PUBLIC_DOMAIN"
+echo "- Zone:Zone:Read for your domain $PUBLIC_DOMAIN"
+echo ""
+echo "Execute:"
+echo "sudo ./$COMPOSE_UP_SCRIPT"
+echo "to start the containers"
+echo ""
+echo "============================================================================================================================================================="
+echo "============================================================================================================================================================="
+tput sgr0
 # change user to apps
 sudo su - apps
