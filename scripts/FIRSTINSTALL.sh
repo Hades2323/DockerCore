@@ -41,14 +41,14 @@ sudo apt update
 sudo apt upgrade -y
 
 #Install the Required Packages
-#sudo apt install -y ca-certificates curl gnupg lsb-release htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ufw fail2ban ntp network-manager openssh python3 python3-pip python3-venv
+sudo apt install -y ca-certificates curl ufw fail2ban gnupg lsb-release htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ntp network-manager openssh-server python3 python3-pip python3-venv
 # Uncomment the line above to install all packages at once. Below is an explanation of the packages:
 # Required for downloading and verifying software packages.
-sudo apt install -y ca-certificates curl gnupg lsb-release apt-transport-https python3 python3-pip python3-venv
+#sudo apt install -y ca-certificates curl gnupg lsb-release apt-transport-https python3 python3-pip python3-venv
 # Install system monitoring and management tools
-sudo apt install -y htop zip unzip net-tools ncdu apache2-utils git acl
+#sudo apt install -y htop zip unzip net-tools ncdu apache2-utils git acl
 # Install security and networking tools
-sudo apt install -y ufw fail2ban ntp network-manager openssh
+#sudo apt install -y ufw fail2ban ntp network-manager openssh-server
 
 #A few system configuration tweaks to enhance the performance and handling of large list of files (e.g. Plex/Jellyfin metadata)
 grep -q "^vm.swappiness=10$" /etc/sysctl.conf || echo "vm.swappiness=10" | sudo tee -a /etc/sysctl.conf
