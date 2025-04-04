@@ -220,14 +220,18 @@ else
     echo "GitHub is reachable. Proceeding with the script."
 fi
 
-if ! curl -s --head https://github.com/Hades2323/DockerCore.git | grep "200 OK" &> /dev/null; then
-    echo "Error: Repository URL is invalid or inaccessible. Please verify the URL."
-if ! sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
-    echo "Error: Failed to clone the repository. Please check your internet connection or verify the repository URL is valid and accessible."
-    exit 1
+if curl -sL --head https://github.com/Hades2323/DockerCore.git | grep "200 OK" &> /dev/null; then
+    if sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
+        echo "Repository cloned successfully into $DOCKER_CORE_PATH."
+    else
+        echo "Error: Failed to clone the repository. Please check your internet connection or verify the repository URL is valid and accessible."
+        exit 1
+    fi
 else
-    echo "Repository cloned successfully into $DOCKER_CORE_PATH."
+    echo "Error: Repository URL is invalid or inaccessible. Please verify the URL."
+    exit 1
 fi
+
 sudo chown -R apps:apps "$DOCKER_CORE_PATH"
 
 # Create log folder for traefik 3
