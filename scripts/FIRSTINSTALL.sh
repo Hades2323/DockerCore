@@ -150,7 +150,7 @@ sudo ufw allow 853/tcp
 #sudo ufw allow 80/udp
 #sudo ufw allow 443/udp
 # Display the current firewall rules for review
-sudo ufw status verbose
+sudo ufw show added
 while true; do
     read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
     CONFIRM=$(echo "$CONFIRM" | tr '[:upper:]' '[:lower:]')
@@ -160,8 +160,8 @@ while true; do
         echo "Invalid input. Please enter 'yes' or 'no'."
     fi
 done
-# Display the current firewall rules for review
-sudo ufw show added
+sudo ufw status verbose # This should show the rules we just added
+# Enable the firewall if the user confirms
 
 # Prompt the user for confirmation before enabling the firewall
 read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
@@ -264,6 +264,7 @@ while true; do
         echo "Invalid domain name. Please enter a valid domain name (e.g., example.com)."
     fi
 done
+if
 sudo sed -i "s/^DOMAINNAME_00=.*/DOMAINNAME_00=$PUBLIC_DOMAIN/" "$DOCKER_CORE_PATH/.env"
     sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"
 else
