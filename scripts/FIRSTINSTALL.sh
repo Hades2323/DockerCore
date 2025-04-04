@@ -255,6 +255,8 @@ if [ -d "$DOCKER_CORE_PATH/logs/vps01" ]; then
     sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"
 else
     echo "Warning: Directory $DOCKER_CORE_PATH/logs/vps01 does not exist."
+fi
+
 # Ask and validate the principal public domain name before inserting it into the .env file
 while true; do
     read -p "Enter the principal public domain name: " PUBLIC_DOMAIN
@@ -264,12 +266,16 @@ while true; do
         echo "Invalid domain name. Please enter a valid domain name (e.g., example.com)."
     fi
 done
-if
+
+# Update the .env file with the public domain name
 sudo sed -i "s/^DOMAINNAME_00=.*/DOMAINNAME_00=$PUBLIC_DOMAIN/" "$DOCKER_CORE_PATH/.env"
+
+if [ -d "$DOCKER_CORE_PATH/compose/vps01" ]; then
     sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"
 else
     echo "Warning: Directory $DOCKER_CORE_PATH/compose/vps01 does not exist."
 fi
+
 # Mattermost default UID and GID is 2000
 # Set the ownership of the mattermost folder to the 'apps' user and group
 sudo chown -R 2000:2000 "$DOCKER_CORE_PATH/appdata/mattermost"
