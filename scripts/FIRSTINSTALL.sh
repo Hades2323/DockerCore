@@ -165,12 +165,19 @@ sudo ufw status verbose # This should show the rules we just added
 
 # Prompt the user for confirmation before enabling the firewall
 read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
+
 #######################################
 ########## Secure SSH Access ##########
 # Backup the original sshd_config file
 sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 # Change the SSH port from 22 to the specified port
-if grep -q "^Port " /etc/ssh/sshd_config; then
+# Ensure only one Port directive exists in /etc/ssh/sshd_config
+    if grep -q "^Port " /etc/ssh/sshd_config; then
+        sudo sed -i "s/^Port .*/Port ${SSH_PORT}/" /etc/ssh/sshd_config
+    else
+        echo "Port ${SSH_PORT}" | sudo tee -a /etc/ssh/sshd_config
+    fi
+echo "Port ${SSH_PORT}" | sudo tee -a /etc/ssh/sshd_config > /dev/null
     sudo sed -i "s/^Port .*/Port ${SSH_PORT}/" /etc/ssh/sshd_config
 # Restart the SSH service to apply the changes
 sudo systemctl restart ssh
@@ -178,8 +185,6 @@ sudo ufw status verbose # This should show the rules we just added
 #######################################
 # Change the SSH port from 22 to 55222
 sudo sed -i "s/#Port 22/Port ${SSH_PORT}/" /etc/ssh/sshd_config
-# Restart the SSH service to apply the changes
-sudo systemctl restart ssh
 
 
 # Install Docker
@@ -239,6 +244,7 @@ sudo mv "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" "$DOCKER_CORE_PATH/appd
 sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"
 sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"
 sudo chmod 600 "$DOCKER_CORE_PATH/appdata/traefik3/acme/acme.json"
+
 if [ -f "$DOCKER_CORE_PATH/docker-compose-vps01.yml" ]; then
     sudo mv "$DOCKER_CORE_PATH/docker-compose-vps01.yml" "$DOCKER_CORE_PATH/docker-compose-$(hostname).yml"
 else
@@ -390,6 +396,8 @@ sudo chmod +x "$COMPOSE_UP_SCRIPT"
 # Get the public IP address of the server
 PUBLIC_IP=$(curl -s checkip.amazonaws.com)
 
+sudo systemctl enable ufw
+
 echo -e "=============================================================================================================================================================
 tput bold; tput setaf 2
 echo "============================================================================================================================================================="
@@ -415,5 +423,17 @@ echo ""
 echo "============================================================================================================================================================="
 echo "============================================================================================================================================================="
 tput sgr0
+
+# Prompt the user to restart the SSH service to apply the changes
+read -p "The SSH configuration has been updated. Do you want to restart the SSH service now? (yes/no): " RESTART_SSH
+RESTART_SSH=$(echo "$RESTART_SSH" | tr '[:upper:]' '[:lower:]')
+if [[ "$RESTART_SSH" == "yes" ]]; then
+    # Restart the SSH service to apply the changes
+    sudo systemctl restart ssh
+    echo "SSH service has been restarted."
+else
+    echo "Please remember to restart the SSH service later to apply the changes."
+fi
+
 # change user to apps
 sudo su - apps
