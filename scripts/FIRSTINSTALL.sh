@@ -220,6 +220,9 @@ sudo sed -i "s/^PUID=.*/PUID=$APPS_UID/" "$DOCKER_CORE_PATH/.env"
 sudo sed -i "s/^PGID=.*/PGID=$APPS_GID/" "$DOCKER_CORE_PATH/.env"
 # Insert the hostname into the .env file
 sudo sed -i "s/^HOSTNAME=.*/HOSTNAME=$(hostname)/" "$DOCKER_CORE_PATH/.env"
+# Ask and insert the principal public domain name into the .env file
+read -p "Enter the principal public domain name: " PUBLIC_DOMAIN
+sudo sed -i "s/^DOMAINNAME_00=.*/DOMAINNAME_00=$PUBLIC_DOMAIN/" "$DOCKER_CORE_PATH/.env"
 
 
 #######################################
