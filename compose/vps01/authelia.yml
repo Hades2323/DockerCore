@@ -1,5 +1,6 @@
 services:
   # Authelia (Lite) - Self-Hosted Single Sign-On and Two-Factor Authentication
+  # https://www.authelia.com/configuration/methods/environment/
   authelia:
     container_name: authelia
     image: authelia/authelia:4.38.8
@@ -24,6 +25,12 @@ services:
       # - AUTHELIA_STORAGE_MYSQL_PASSWORD_FILE=/run/secrets/authelia_storage_mysql_password
       # - AUTHELIA_SESSION_REDIS_PASSWORD_FILE=/run/secrets/authelia_session_redis_password
       # - AUTHELIA_DUO_API_SECRET_KEY_FILE=/run/secrets/authelia_duo_api_secret_key
+      # - AUTHELIA_STORAGE_POSTGRESS_ADDRESS=postgres:5432
+      # - AUTHELIA_STORAGE_POSTGRESS_PORT=5432
+      # - AUTHELIA_STORAGE_POSTGRESS_USERNAME=authelia
+      # - AUTHELIA_STORAGE_POSTGRESS_PASSWORD_FILE=/run/secrets/authelia_postgres_password
+      # - AUTHELIA_STORAGE_POSTGRESS_DATABASE=authelia
+      # - AUTHELIA_STORAGE_POSTGRESS_TLS_SKIP_VERIFY=true
     secrets:
       - authelia_jwt_secret
       - authelia_storage_encryption_key

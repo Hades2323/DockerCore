@@ -15,6 +15,8 @@ services:
       - ADMIN_TOKEN: /run/secrets/vaultwarden_admin_token
     volumes:
       - $DOCKERDIR/appdata/vaultwarden/data:/data
+    secrets:
+      - vaultwarden_admin_token
     labels:
     - "traefik.enable=true"
     ## HTTP Routers

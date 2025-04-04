@@ -18,16 +18,17 @@ services:
       - $DOCKERDIR/appdata/odoo/addons:/mnt/extra-addons
     environment:
       - USER=$ODOO_USER
-      - PASSWORD=$ODOO_PASSWORD
-      #- PASSWORD_FILE=$ODOO_PASSWORD_FILE
+      #- PASSWORD=$ODOO_PASSWORD
+      - PASSWORD_FILE=/run/secrets/odoo_password
       - POSTGRES_DB=$ODOO_POSTGRES_DB
-      #- POSTGRES_PASSWORD_FILE=$ODOO_POSTGRES_PASSWORD_FILE
+      #- POSTGRES_PASSWORD_FILE=/run/secrets/odoo_postgres_password
       - POSTGRES_USER=$ODOO_POSTGRES_USER
       - POSTGRES_PASSWORD=$ODOO_POSTGRES_PASSWORD
       - POSTGRES_HOST=$ODOO_POSTGRES_HOST
       #- PGDATA=$ODOO_PGDATA
     secrets:
-      - odoo_postgresql_password
+      - odoo_postgres_password
+      - odoo_password
     labels:
       - "traefik.enable=true"
       # HTTP Routers

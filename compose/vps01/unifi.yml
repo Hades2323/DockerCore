@@ -8,6 +8,7 @@ services:
     #profiles: ["media", "arrs", "all"]
     networks:
       - t3_proxy
+      - socket_proxy
     ports:
       - 8080:8080
       - 8443:8443

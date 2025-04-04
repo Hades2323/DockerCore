@@ -35,7 +35,7 @@ sudo apt upgrade -y
 
 #Install the Required Packages
 #zip and unzip are for compression, net-tools is to check port usage and availability, htop provides a nice UI to see running processes, and ncdu helps visualize disk space usage.#
-sudo apt install -y ca-certificates curl gnupg lsb-release htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ufw fail2ban ntp network-manager
+sudo apt install -y ca-certificates curl gnupg lsb-release htop zip unzip gnupg apt-transport-https net-tools ncdu apache2-utils git acl ufw fail2ban ntp network-manager openssh
 
 #Perform Server Tweaks
 #A few system configuration tweaks to enhance the performance and handling of large list of files (e.g. Plex/Jellyfin metadata)
@@ -258,6 +258,38 @@ echo -e "Create vnc password: "
 read -sp "Enter password: " VNC_PASSWORD
 echo
 echo "$VNC_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/vnc_password"
+
+# create the secret for AUTHELIA_JWT_SECRET
+AUTHELIA_JWT_SECRET=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64)
+echo "$AUTHELIA_JWT_SECRET" | sudo tee "$DOCKER_CORE_PATH/secrets/authelia_jwt_secret"
+
+# create the secret for AUTHELIA_SESSION_SECRET
+AUTHELIA_SESSION_SECRET=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64)
+echo "$AUTHELIA_SESSION_SECRET" | sudo tee "$DOCKER_CORE_PATH/secrets/authelia_session_secret"
+
+# create the secret for AUTHELIA_STORAGE_ENCRYPTION_KEY
+AUTHELIA_STORAGE_ENCRYPTION_KEY=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64)
+echo "$AUTHELIA_STORAGE_ENCRYPTION_KEY" | sudo tee "$DOCKER_CORE_PATH/secrets/authelia_storage_encryption_key"
+
+# create the secret for vaultwarden_admin_token
+VAULTWARDEN_ADMIN_TOKEN=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 64)
+echo "$VAULTWARDEN_ADMIN_TOKEN" | sudo tee "$DOCKER_CORE_PATH/secrets/vaultwarden_admin_token"
+
+# create the secret for nextcloud_admin_password
+NEXTCLOUD_ADMIN_PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16)
+echo "$NEXTCLOUD_ADMIN_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/nextcloud_admin_password"
+
+# create the secret for odoo_password
+ODOO_PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16)
+echo "$ODOO_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/odoo_password"
+
+# create the secret for umami_app_secret
+UMAMI_APP_SECRET=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16)
+echo "$UMAMI_APP_SECRET" | sudo tee "$DOCKER_CORE_PATH/secrets/umami_app_secret"
+
+# create the secret for umami_admin_password
+UMAMI_ADMIN_PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16)
+echo "$UMAMI_ADMIN_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/umami_admin_password"
 
 # Check if DOCKER_CORE_PATH is not /opt/docker/core
 if [ "$DOCKER_CORE_PATH" != "/opt/docker/core" ]; then

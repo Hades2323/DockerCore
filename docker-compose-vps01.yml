@@ -18,12 +18,6 @@ networks:
     ipam:
       config:
         - subnet: 10.10.10.0/24
-  # t2_proxy:
-  #   name: t2_proxy
-  #   driver: bridge
-  #   ipam:
-  #     config:
-  #       - subnet: 10.30.10.0/24
   t3_proxy:
     name: t3_proxy
     driver: bridge
@@ -74,15 +68,19 @@ secrets:
   nextcloud_admin_user:
     file: $SECRETSDIR/nextcloud_admin_user # put admin username in this file
   nextcloud_apostgres_db:
-    file: $SECRETSDIR/nextcloud_apostgres_db # put postgresql db name in this file
+    file: $SECRETSDIR/nextcloud_postgres_db # put postgresql db name in this file
   nextcloud_apostgres_password:
-    file: $SECRETSDIR/nextcloud_apostgres_password # put postgresql password in this file
+    file: $SECRETSDIR/nextcloud_postgres_password # put postgresql password in this file
   nextcloud_apostgres_user:
-    file: $SECRETSDIR/nextcloud_apostgres_user # put postgresql username in this file
+    file: $SECRETSDIR/nextcloud_postgres_user # put postgresql username in this file
   odoo_postgres_password:
     file: $SECRETSDIR/odoo_postgres_password # put postgresql password in this file
   odoo_password:
     file: $SECRETSDIR/odoo_password # put odoo password in this file
+  umami_app_secret:
+    file: $SECRETSDIR/umami_app_secret # put umami app secret in this file
+  umami_admin_password:
+    file: $SECRETSDIR/umami_admin_password # put umami admin password in this file
 include:
   ######## SERVICES ########
   # PREFIX - vps01

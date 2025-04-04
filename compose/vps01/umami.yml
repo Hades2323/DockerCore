@@ -1,4 +1,6 @@
 services:
+  #  Umami is a simple, fast, privacy-focused alternative to Google Analytics. It is a self-hosted web analytics solution that is easy to use and provides detailed insights into your website's performance.
+  #  It is designed to be lightweight and fast, making it a great choice for those who want to track their website's performance without the bloat of other analytics solutions.
   umami:
     image: ghcr.io/umami-software/umami:postgresql-latest
     container_name: umami
@@ -16,14 +18,18 @@ services:
       - $DOCKERDIR/appdata/umami/logs:/app/logs # Logs directory
       - $DOCKERDIR/appdata/umami/uploads:/app/uploads # Uploads directory
     environment:
-      DATABASE_URL: postgresql://umami:umami@db:5432/umami
+      DATABASE_URL: postgresql://umami:umami@postgres:5432/umami
       DATABASE_TYPE: postgresql
-      APP_SECRET: $UMAMI_APP_SECRET
+      APP_SECRET: /run/secrets/umami_app_secret
+      UMAMI_ADMIN_PASSWORD: /run/secrets/umami_admin_password
     depends_on:
       postgres:
         condition: service_healthy
     links:
       - postgres
+    secrets:
+      - umami_app_secret
+      - umami_admin_password
     labels:
       - "traefik.enable=true"
       # HTTP Routers
