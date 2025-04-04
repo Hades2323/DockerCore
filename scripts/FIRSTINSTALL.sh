@@ -20,14 +20,20 @@ fi
 # This script creates a new user named 'apps' and adds it to the 'sudo' group.
 # The 'apps' user is intended to be used for executing containers.
 # During the execution of this script, you will be prompted to set a password for the 'apps' user.
-# If the user creation fails, the script will exit with an error message.
 # Create a New User apps
 echo -e "\e[1;32mCreating a new user named 'apps' and adding it to the 'sudo' group. Insert password for the user 'apps'\e[0m"
-if sudo adduser apps; then
-    sudo adduser apps sudo
-    echo "User 'apps' created and added to the 'sudo' group successfully."
+if id "apps" &>/dev/null; then
+    echo "User 'apps' already exists. Adding to 'sudo' group and changing password."
+    sudo usermod -aG sudo apps
+    sudo passwd apps
 else
-    echo "'apps' user exists or user creation failed"
+    if sudo adduser apps; then
+        sudo adduser apps sudo
+        echo "User 'apps' created and added to the 'sudo' group successfully."
+    else
+        echo "Failed to create user 'apps'."
+        exit 1
+    fi
 fi
 
 #Update the OS
