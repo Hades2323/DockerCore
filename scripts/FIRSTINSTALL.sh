@@ -206,13 +206,18 @@ fi
 # Check if the destination folder is empty
 if [ "$(ls -A $DOCKER_CORE_PATH 2>/dev/null)" ]; then
     echo "Error: The destination folder $DOCKER_CORE_PATH must be empty."
+    echo "Please remove any existing files or folders in $DOCKER_CORE_PATH before proceeding."
     exit 1
+else
+    echo "The destination folder $DOCKER_CORE_PATH is empty. Proceeding with the script."
 fi
 
 # Clone the repository into the specified folder
 if ! ping -c 1 github.com &> /dev/null; then
     echo "Error: Unable to reach GitHub. Please check your internet connection."
     exit 1
+else
+    echo "GitHub is reachable. Proceeding with the script."
 fi
 
 if ! curl -s --head https://github.com/Hades2323/DockerCore.git | grep "200 OK" &> /dev/null; then
@@ -220,6 +225,8 @@ if ! curl -s --head https://github.com/Hades2323/DockerCore.git | grep "200 OK" 
 if ! sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
     echo "Error: Failed to clone the repository. Please check your internet connection or verify the repository URL is valid and accessible."
     exit 1
+else
+    echo "Repository cloned successfully into $DOCKER_CORE_PATH."
 fi
 sudo chown -R apps:apps "$DOCKER_CORE_PATH"
 
