@@ -398,31 +398,31 @@ PUBLIC_IP=$(curl -s checkip.amazonaws.com)
 
 sudo systemctl enable ufw
 
-echo -e "=============================================================================================================================================================
-tput bold; tput setaf 2
-echo "============================================================================================================================================================="
-echo "============================================================================================================================================================="
+echo "================================================================================"
+echo "================================================================================"
 echo ""
-echo "All done,"
+echo "All setup tasks have been successfully completed,"
 echo "SSH port: $SSH_PORT"
 echo "ssh apps@$PUBLIC_IP -p $SSH_PORT"
 echo ""
 echo "Set variables in $DOCKER_CORE_PATH/.env file"
 echo "Comment/uncomment docker-compose-$(hostname).yml"
 echo "Verify or/and set secrets files in $DOCKER_CORE_PATH/secrets"
-echo "The most important is the Cloudflare API token: $DOCKER_CORE_PATH/secrets/cf_dns_api_token. The other ones are set by the script."
+echo "The most important is the Cloudflare API token: $DOCKER_CORE_PATH/secrets/cf_dns_api_token. This token is critical because it allows the script to manage DNS records for your domain on Cloudflare. It is used to automatically configure DNS settings required for services like Traefik to function properly. Ensure that the token has the necessary permissions (Zone:DNS:Edit and Zone:Zone:Read) for your domain."
 echo ""
 echo "Create an API token in your Cloudflare account with the following permissions:"
+echo "Refer to Cloudflare's documentation for guidance: https://developers.cloudflare.com/api/tokens/create/"
 echo "- Zone:DNS:Edit for your domain $PUBLIC_DOMAIN"
 echo "- Zone:Zone:Read for your domain $PUBLIC_DOMAIN"
 echo ""
-echo "Execute:"
+# This command starts the Docker containers defined in the compose file
+echo "execute the following command to start the containers:"
 echo "sudo ./$COMPOSE_UP_SCRIPT"
 echo "to start the containers"
 echo ""
 echo "============================================================================================================================================================="
 echo "============================================================================================================================================================="
-tput sgr0
+
 
 # Prompt the user to restart the SSH service to apply the changes
 read -p "The SSH configuration has been updated. Do you want to restart the SSH service now? (yes/no): " RESTART_SSH
