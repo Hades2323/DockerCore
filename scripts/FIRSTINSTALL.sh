@@ -27,8 +27,7 @@ if sudo adduser apps; then
     sudo adduser apps sudo
     echo "User 'apps' created and added to the 'sudo' group successfully."
 else
-    echo "Failed to create the 'apps' user. Exiting."
-    exit 1
+    echo "'apps' user exists or user creation failed"
 fi
 
 #Update the OS
