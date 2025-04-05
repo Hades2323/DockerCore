@@ -16,10 +16,10 @@ services:
       - $DOCKERDIR/appdata/postgres/backup:/backup
       - $DOCKERDIR/appdata/postgres/scripts:/docker-entrypoint-initdb.d
     environment:
-      - POSTGRES_USER=$POSTGRES_USER
-      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_root_password
-      - POSTGRES_DB=$POSTGRES_DB
-      - POSTGRES_MULTIPLE_DATABASES=$POSTGRES_MULTIPLE_DATABASES
+      - POSTGRES_USER:"$POSTGRES_USER"
+      - POSTGRES_PASSWORD_FILE:"/run/secrets/postgres_root_password"
+      - POSTGRES_DB:"$POSTGRES_DB"
+      - POSTGRES_MULTIPLE_DATABASES:"$POSTGRES_MULTIPLE_DATABASES"
     #healthcheck:
       #test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       #interval: 10s

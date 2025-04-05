@@ -201,8 +201,8 @@ fi
 
 # Check if the destination folder is empty
 if [ "$(ls -A $DOCKER_CORE_PATH 2>/dev/null)" ]; then
-    echo "\e[1;31mError: The destination folder $DOCKER_CORE_PATH must be empty\e[0m"
-    echo "\e[1;31mPlease remove any existing files or folders in $DOCKER_CORE_PATH before proceeding\e[0m"
+    echo -e "\e[1;31mError: The destination folder $DOCKER_CORE_PATH must be empty\e[0m"
+    echo -e "\e[1;31mPlease remove any existing files or folders in $DOCKER_CORE_PATH before proceeding\e[0m"
     exit 1
 else
     echo "The destination folder $DOCKER_CORE_PATH is empty. Proceeding with the script."
@@ -210,16 +210,16 @@ fi
 
 # Clone the repository into the specified folder
 if ! ping -c 1 github.com &> /dev/null; then
-    echo - e"\e[1;31mError: Unable to reach GitHub. Please check your internet connection\e[0m"
+    echo -e "\e[1;31mError: Unable to reach GitHub. Please check your internet connection\e[0m"
     exit 1
 else
-    echo - e"\e[1;32mGitHub is reachable. Proceeding with the script\e[0m"
+    echo -e "\e[1;32mGitHub is reachable. Proceeding with the script\e[0m"
 fi
 
 # Clone the DockerCore repository to set up the necessary Docker configurations and services.
 # This repository contains pre-configured Docker Compose files and other resources required for the server setup.
 if sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
-    echo "\e[1;32mThe repository has been successfully cloned into the directory: $DOCKER_CORE_PATH\e[0m"
+    echo -e "\e[1;32mThe repository has been successfully cloned into the directory: $DOCKER_CORE_PATH\e[0m"
 else
     echo -e "\e[1;31mError: Failed to clone the repository into $DOCKER_CORE_PATH from https://github.com/Hades2323/DockerCore.git. Please check your internet connection or verify the repository URL is valid and accessible\e[0m"
     exit 1
@@ -254,7 +254,7 @@ if ! sudo mv "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" "$DOCKER_CORE_PATH
 fi
 
 if ! sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"; then
-    echo "\e[1;31mError: Failed to move logs directory. Please check if the cloned repository is correct.\e[0m"
+    echo -e "\e[1;31mError: Failed to move logs directory. Please check if the cloned repository is correct.\e[0m"
     exit 1
 fi
 
@@ -290,9 +290,6 @@ sudo sed -i "s/^PUID=.*/PUID=$APPS_UID/" "$DOCKER_CORE_PATH/.env"
 sudo sed -i "s/^PGID=.*/PGID=$APPS_GID/" "$DOCKER_CORE_PATH/.env"
 # Insert the hostname into the .env file
 sudo sed -i "s/^HOSTNAME=.*/HOSTNAME=$(hostname)/" "$DOCKER_CORE_PATH/.env"
-# Ask and insert the principal public domain name into the .env file
-read -p "Enter the principal public domain name: " PUBLIC_DOMAIN
-sudo sed -i "s/^DOMAINNAME_00=.*/DOMAINNAME_00=$PUBLIC_DOMAIN/" "$DOCKER_CORE_PATH/.env"
 
 
 #######################################
@@ -320,10 +317,10 @@ echo
 echo "$MARIADB_ROOT_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/mysql_root_password"
 
 # Create the secret for postgres user
-echo -e "\e[1;32mCreate postgres user password: \e[0m"
-read -sp "Enter password: " POSTGRES_ROOT_PASSWORD
-echo
-echo "$POSTGRES_ROOT_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/postgres_root_password"
+#echo -e "\e[1;32mCreate postgres user password: \e[0m"
+#read -sp "Enter password: " POSTGRES_ROOT_PASSWORD
+#echo
+#echo "$POSTGRES_ROOT_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/postgres_root_password"
 
 # Create the secret for vnc password
 echo -e "\e[1;32mCreate vnc password: \e[0m"
@@ -405,7 +402,7 @@ echo -e "\e[1;32m- Zone:Zone:Read\e[0m for your domain $PUBLIC_DOMAIN"
 echo ""
 # This command starts the Docker containers defined in the compose file
 echo -e "\e[1;32mExecute the following command to start the containers:\e[0m"
-echo -e "sudo .$COMPOSE_UP_SCRIPT"
+echo -e "sudo bash $COMPOSE_UP_SCRIPT"
 echo ""
 echo -e "\e[1;32m================================================================================\e[0m"
 echo -e "================================================================================="

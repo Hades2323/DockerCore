@@ -10,8 +10,6 @@ services:
         - t3_proxy
       ports:
         - 8978:8978
-      depends:
-        - postgres
       links:
         - postgres
       volumes:

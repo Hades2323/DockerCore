@@ -8,7 +8,7 @@ services:
     # - "1.x.y" to pin the specific version 1.x.y
     network_mode: host
     # This bypasses network isolation and makes IPv6 easier (optional; see below)
-    restart: unless-stoppedalways
+    restart: unless-stopped
     # Restart the updater after reboot
     user: "$PUID:$PGID"
     # Run the updater with specific user and group IDs (in that order).
