@@ -24,13 +24,13 @@ services:
       - "traefik.http.routers.prowlarr-rtr.entrypoints=websecure"
       - "traefik.http.routers.prowlarr-rtr.rule=Host(`prowlarr.$DOMAINNAME_00`)"
       # Middlewares
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
-      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # - "traefik.http.routers.prowlarr-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.prowlarr-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.prowlarr-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.prowlarr-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.prowlarr-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.prowlarr-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.prowlarr-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.prowlarr-rtr.service=prowlarr-svc"
       - "traefik.http.services.prowlarr-svc.loadbalancer.server.port=9696"

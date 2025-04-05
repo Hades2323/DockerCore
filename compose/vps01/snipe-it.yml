@@ -38,14 +38,13 @@ services:
       - "traefik.http.routers.snipe-it-rtr.entrypoints=websecure"
       - "traefik.http.routers.snipe-it-rtr.rule=Host(`snipe-it.$DOMAINNAME_00`)"
       # Middlewares
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      # - "traefik.http.routers.snipe-it-rtr.middlewares=chain-no-auth@file" # For No Authentication
       - "traefik.http.routers.snipe-it-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # - "traefik.http.routers.snipe-it-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.snipe-it-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.snipe-it-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.snipe-it-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.snipe-it-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.snipe-it-rtr.service=snipe-it-svc"
       - "traefik.http.services.snipe-it-svc.loadbalancer.server.port=80"
-      

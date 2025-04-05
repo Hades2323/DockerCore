@@ -421,5 +421,6 @@ else
     echo "Please remember to restart the SSH service later to apply the changes."
 fi
 
+# cd $DOCKER_CORE_PATH
 # change user to apps
 sudo su - apps

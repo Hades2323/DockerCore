@@ -19,13 +19,13 @@ services:
       - "traefik.http.routers.tamari-rtr.entrypoints=websecure"
       - "traefik.http.routers.tamari-rtr.rule=Host(`tamari.$DOMAINNAME_00`) || Host(`www.tamari.$DOMAINNAME_00`)"
       # Middlewares
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
-      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # - "traefik.http.routers.tamari-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.tamari-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.tamari-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.tamari-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.tamari-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.tamari-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.tamari-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.tamari-rtr.service=tamari-svc"
       - "traefik.http.services.tamari-svc.loadbalancer.server.port=4888"

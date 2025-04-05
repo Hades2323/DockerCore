@@ -5,9 +5,9 @@ services:
     restart: unless-stopped
     networks:
       socket_proxy:
-        ipv4_address: 10.10.10.230 # You can specify a static IP
-      default:
-      t3_proxy:
+        ipv4_address: 10.10.10.240 # You can specify a static IP
+      #default:
+      #t3_proxy:
     ports:
       - 5432:5432
     volumes:
@@ -16,10 +16,10 @@ services:
       - $DOCKERDIR/appdata/postgres/backup:/backup
       - $DOCKERDIR/appdata/postgres/scripts:/docker-entrypoint-initdb.d
     environment:
-      - POSTGRES_USER: ${POSTGRES_USER}
-      - POSTGRES_PASSWORD: /run/secrets/postgres_root_password
-      - POSTGRES_DB: ${POSTGRES_DB}
-      - POSTGRES_MULTIPLE_DATABASES: ${POSTGRES_MULTIPLE_DATABASES}
+      - POSTGRES_USER=$POSTGRES_USER
+      - POSTGRES_PASSWORD_FILE=/run/secrets/postgres_root_password
+      - POSTGRES_DB=$POSTGRES_DB
+      - POSTGRES_MULTIPLE_DATABASES=$POSTGRES_MULTIPLE_DATABASES
     #healthcheck:
       #test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       #interval: 10s
@@ -28,7 +28,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "2"
+          #cpus: "2"
           memory: 2G
     secrets:
       - postgres_root_password

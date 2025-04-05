@@ -23,13 +23,13 @@ services:
       - "traefik.http.routers.grocy-rtr.entrypoints=websecure"
       - "traefik.http.routers.grocy-rtr.rule=Host(`grocy.$DOMAINNAME_00`) || Host(`www.grocy.$DOMAINNAME_00`)"
       # Middlewares
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
-      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # - "traefik.http.routers.grocy-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.grocy-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.grocy-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.grocy-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.grocy-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.grocy-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.grocy-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.grocy-rtr.service=grocy-svc"
       - "traefik.http.services.grocy-svc.loadbalancer.server.port=80"

@@ -26,13 +26,13 @@ services:
       - "traefik.http.routers.checkmk-rtr.entrypoints=websecure"
       - "traefik.http.routers.checkmk-rtr.rule=Host(`jdown.$DOMAINNAME_00`)"
       # Middlewares
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
-      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # - "traefik.http.routers.checkmk-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.checkmk-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.checkmk-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.checkmk-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.checkmk-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.checkmk-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.checkmk-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.checkmk-rtr.service=checkmk-svc"
       - "traefik.http.services.checkmk-svc.loadbalancer.server.port=8080"

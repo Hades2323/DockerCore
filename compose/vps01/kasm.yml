@@ -35,13 +35,13 @@ services:
       - "traefik.http.routers.kasm-rtr.entrypoints=websecure"
       - "traefik.http.routers.kasm-rtr.rule=Host(`kasm.$DOMAINNAME_00`)"
       # Middlewares
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
-      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # - "traefik.http.routers.kasm-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.kasm-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.kasm-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.kasm-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.kasm-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.kasm-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.kasm-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.kasm-rtr.service=kasm-svc"
       - "traefik.http.services.kasm-svc.loadbalancer.server.port=3000"

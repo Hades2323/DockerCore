@@ -11,7 +11,7 @@
 # You may customize the network subnets (10.x.x.0/24) below.
 networks:
   default: # Default network docker 172.17.0.0/16
-    driver: bridge 
+    driver: bridge
   socket_proxy:
     name: socket_proxy
     driver: bridge
@@ -36,6 +36,8 @@ secrets:
   mysql_root_password:
     file: $SECRETSDIR/mysql_root_password
   postgres_password:
+    file: $SECRETSDIR/postgres_root_password
+  postgres_root_password:
     file: $SECRETSDIR/postgres_root_password
   pgadmin_password:
     file: $SECRETSDIR/pgadmin_password

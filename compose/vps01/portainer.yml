@@ -2,7 +2,7 @@ services:
   # Portainer - WebUI for Containers
   portainer:
     container_name: portainer
-    image: portainer/portainer-ee:latest # Use portainer-ce if you do no have a Business Edition license key
+    image: portainer/portainer-ce:latest # Use portainer-ee if you have a Business Edition license key
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped
@@ -25,13 +25,13 @@ services:
       - "traefik.http.routers.portainer-rtr.entrypoints=websecure"
       - "traefik.http.routers.portainer-rtr.rule=Host(`portainer.$DOMAINNAME_00`)"
       # Middlewares
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
-      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # - "traefik.http.routers.portainer-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.portainer-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.portainer-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.portainer-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.portainer-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.portainer-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.portainer-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.portainer-rtr.service=portainer-svc"
       - "traefik.http.services.portainer-svc.loadbalancer.server.port=9000"

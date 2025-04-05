@@ -36,14 +36,13 @@ services:
       - "traefik.http.routers.semaphore-rtr.entrypoints=websecure"
       - "traefik.http.routers.semaphore-rtr.rule=Host(`semaphore.$DOMAINNAME_00`)"
       # Middlewares
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth@file" # For No Authentication
-      - "traefik.http.routers.traefik-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-no-crowdsec@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-no-auth-webos@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth-external@file"
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-oauth@file" # For Google OAuth
-      # - "traefik.http.routers.traefik-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # - "traefik.http.routers.semaphore-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.semaphore-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.semaphore-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.semaphore-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.semaphore-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.semaphore-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.semaphore-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
       # HTTP Services
       - "traefik.http.routers.semaphore-rtr.service=semaphore-svc"
-      - "traefik.http.services.semaphore-svc.loadbalancer.server.port=3000"      
-      
+      - "traefik.http.services.semaphore-svc.loadbalancer.server.port=3000"
