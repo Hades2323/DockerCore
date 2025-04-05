@@ -220,10 +220,12 @@ else
     echo "GitHub is reachable. Proceeding with the script."
 fi
 
-if sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
-    echo "Repository cloned successfully into $DOCKER_CORE_PATH"
+# Clone the DockerCore repository to set up the necessary Docker configurations and services.
+# This repository contains pre-configured Docker Compose files and other resources required for the server setup.
+if sudo git clone --depth 1 --branch main https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
+    echo "The repository has been successfully cloned into the directory: $DOCKER_CORE_PATH"
 else
-    echo "Error: Failed to clone the repository. Please check your internet connection or verify the repository URL is valid and accessible."
+    echo "Error: Failed to clone the repository into $DOCKER_CORE_PATH from https://github.com/Hades2323/DockerCore.git. Please check your internet connection or verify the repository URL is valid and accessible."
     exit 1
 fi
 

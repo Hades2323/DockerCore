@@ -2,7 +2,7 @@
 ---
 services:
     semaphore:
-      image: public.ecr.aws/semaphore/pro/server:v2.13.5
+      image: semaphoreui/semaphore:v2.13.5-powershell7.5.0
       container_name: semaphore
       hostname: semaphore
       restart: unless-stopped
