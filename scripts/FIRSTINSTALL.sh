@@ -210,10 +210,10 @@ fi
 
 # Clone the repository into the specified folder
 if ! ping -c 1 github.com &> /dev/null; then
-    echo "\e[1;31mError: Unable to reach GitHub. Please check your internet connection\e[0m"
+    echo - e"\e[1;31mError: Unable to reach GitHub. Please check your internet connection\e[0m"
     exit 1
 else
-    echo "\e[1;32mGitHub is reachable. Proceeding with the script\e[0m"
+    echo - e"\e[1;32mGitHub is reachable. Proceeding with the script\e[0m"
 fi
 
 # Clone the DockerCore repository to set up the necessary Docker configurations and services.
@@ -221,7 +221,7 @@ fi
 if sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
     echo "\e[1;32mThe repository has been successfully cloned into the directory: $DOCKER_CORE_PATH\e[0m"
 else
-    echo "\e[1;31mError: Failed to clone the repository into $DOCKER_CORE_PATH from https://github.com/Hades2323/DockerCore.git. Please check your internet connection or verify the repository URL is valid and accessible\e[0m"
+    echo -e "\e[1;31mError: Failed to clone the repository into $DOCKER_CORE_PATH from https://github.com/Hades2323/DockerCore.git. Please check your internet connection or verify the repository URL is valid and accessible\e[0m"
     exit 1
 fi
 
@@ -244,12 +244,12 @@ sudo setfacl -Rdm g:docker:rwx "$DOCKER_CORE_PATH"
 sudo setfacl -Rm g:docker:rwx "$DOCKER_CORE_PATH"
 
 if ! sudo mv "$DOCKER_CORE_PATH/docker-compose-vps01.yml" "$DOCKER_CORE_PATH/docker-compose-$(hostname).yml"; then
-    echo "\e[1;31mError: Failed to move docker-compose-vps01.yml. Please check if the cloned repository is correct.\e[0m"
+    echo -e "\e[1;31mError: Failed to move docker-compose-vps01.yml. Please check if the cloned repository is correct.\e[0m"
     exit 1
 fi
 
 if ! sudo mv "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" "$DOCKER_CORE_PATH/appdata/traefik3/rules/$(hostname)"; then
-    echo "\e[1;31mError: Failed to move traefik3 rules directory. Please check if the cloned repository is correct.\e[0m"
+    echo -e "\e[1;31mError: Failed to move traefik3 rules directory. Please check if the cloned repository is correct.\e[0m"
     exit 1
 fi
 
@@ -259,7 +259,7 @@ if ! sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"
 fi
 
 if ! sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"; then
-    echo "\e[1;31mError: Failed to move compose directory. Please check if the cloned repository is correct.\e[0m"
+    echo -e "\e[1;31mError: Failed to move compose directory. Please check if the cloned repository is correct.\e[0m"
     exit 1
 fi
 
@@ -385,31 +385,30 @@ PUBLIC_IP=$(curl -s checkip.amazonaws.com)
 
 sudo systemctl enable ufw
 
-echo -e "\e[1;32m================================================================================\e[0m"
+echo -e "================================================================================="
 echo -e "\e[1;32m================================================================================\e[0m"
 echo ""
 echo -e "\e[1;32mAll setup tasks have been successfully completed,\e[0m"
-echo -e "\e[1;32mSSH port: $SSH_PORT\e[0m"
+echo -e "SSH port: $SSH_PORT"
 echo -e "\e[1;32mssh apps@$PUBLIC_IP -p $SSH_PORT\e[0m"
 echo ""
-echo -e "\e[1;32mSet variables in $DOCKER_CORE_PATH/.env file\e[0m"
-echo -e "\e[1;32mComment/uncomment docker-compose-$(hostname).yml\e[0m"
-echo -e "\e[1;32mVerify or/and set secrets files in $DOCKER_CORE_PATH/secrets\e[0m"
+echo -e "Set variables in $DOCKER_CORE_PATH/.env file"
+echo -e "Comment/uncomment docker-compose-$(hostname).yml"
+echo -e "Verify or/and set secrets files in $DOCKER_CORE_PATH/secrets"
+echo ""
 echo -e "\e[1;32mThe most important is the Cloudflare API token: $DOCKER_CORE_PATH/secrets/cf_dns_api_token. This token is critical because it allows the script to manage DNS records for your domain on Cloudflare. It is used to automatically configure DNS settings required for services like Traefik to function properly. Ensure that the token has the necessary permissions (Zone:DNS:Edit and Zone:Zone:Read) for your domain.\e[0m"
 echo ""
 echo -e "\e[1;32mCreate an API token in your Cloudflare account with the following permissions:\e[0m"
-echo -e "\e[1;32mRefer to Cloudflare's documentation for guidance: https://developers.cloudflare.com/api/tokens/create/\e[0m"
-echo -e "\e[1;32m- Zone:DNS:Edit for your domain $PUBLIC_DOMAIN\e[0m"
-echo -e "\e[1;32m- Zone:Zone:Read for your domain $PUBLIC_DOMAIN\e[0m"
+echo -e "Refer to Cloudflare's documentation for guidance: https://developers.cloudflare.com/api/tokens/create/"
+echo -e "\e[1;32m- Zone:DNS:Edit\e[0m for your domain $PUBLIC_DOMAIN"
+echo -e "\e[1;32m- Zone:Zone:Read\e[0m for your domain $PUBLIC_DOMAIN"
 echo ""
 # This command starts the Docker containers defined in the compose file
 echo -e "\e[1;32mExecute the following command to start the containers:\e[0m"
-echo -e "\e[1;32msudo .$COMPOSE_UP_SCRIPT\e[0m"
-echo -e "\e[1;32mto start the containers\e[0m"
+echo -e "sudo .$COMPOSE_UP_SCRIPT"
 echo ""
-echo -e "\e[1;32m=============================================================================================================================================================\e[0m"
-echo -e "\e[1;32m=============================================================================================================================================================\e[0m"
-
+echo -e "\e[1;32m================================================================================\e[0m"
+echo -e "================================================================================="
 
 # Prompt the user to restart the SSH service to apply the changes
 read -p "The SSH configuration has been updated. Do you want to restart the SSH service now? (yes/no): " RESTART_SSH
