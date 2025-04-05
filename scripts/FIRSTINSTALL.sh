@@ -152,7 +152,7 @@ sudo ufw allow 853/tcp
 # Display the current firewall rules for review
 sudo ufw show added
 while true; do
-    read -p "\e[1;32mAre you sure you want to enable the firewall with the above rules? (yes/no): \e[0m" CONFIRM
+    read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
     CONFIRM=$(echo "$CONFIRM" | tr '[:upper:]' '[:lower:]')
     if [[ "$CONFIRM" == "yes" || "$CONFIRM" == "no" ]]; then
         break
@@ -271,7 +271,7 @@ sudo chown -R 2000:2000 "$DOCKER_CORE_PATH/appdata/mattermost"
 
 # Ask and validate the principal public domain name before inserting it into the .env file
 while true; do
-    read -p "\e[1;32mEnter the principal public domain name: \e[m0" PUBLIC_DOMAIN
+    read -p "Enter the principal public domain name: " PUBLIC_DOMAIN
     if [[ "$PUBLIC_DOMAIN" =~ ^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z]{2,})+$ ]]; then
         break
     else
@@ -363,29 +363,20 @@ echo "$UMAMI_APP_SECRET" | sudo tee "$DOCKER_CORE_PATH/secrets/umami_app_secret"
 UMAMI_ADMIN_PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16)
 echo "$UMAMI_ADMIN_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/umami_admin_password"
 
-# Check if DOCKER_CORE_PATH is not /opt/docker/core
-if [ "$DOCKER_CORE_PATH" != "/opt/docker/core" ]; then
+# Define the COMPOSE_UP_SCRIPT variable
+COMPOSE_UP_SCRIPT="$DOCKER_CORE_PATH/compose-up.sh"
+
 if [ -f "$COMPOSE_UP_SCRIPT" ]; then
-    read -p "The file $COMPOSE_UP_SCRIPT already exists. Do you want to overwrite it? (\e[1;32myes\e[0m/no): " OVERWRITE
-    OVERWRITE=$(echo "$OVERWRITE" | tr '[:upper:]' '[:lower:]')
-    if [[ "$OVERWRITE" != "yes" ]]; then
-        echo "Aborting creation of $COMPOSE_UP_SCRIPT."
-        exit 1
-    fi
     # Backup the existing file
     BACKUP_FILE="${COMPOSE_UP_SCRIPT}.bak.$(date +%Y%m%d%H%M%S)"
     sudo cp "$COMPOSE_UP_SCRIPT" "$BACKUP_FILE"
-    echo "Existing file backed up as $BACKUP_FILE."
+    echo "Existing $COMPOSE_UP_SCRIPT file backed up as $BACKUP_FILE."
 fi
-    read -p "The file $COMPOSE_UP_SCRIPT already exists. Do you want to overwrite it? (\e[1;32myes\e[0m/no): " OVERWRITE
-    OVERWRITE=$(echo "$OVERWRITE" | tr '[:upper:]' '[:lower:]')
-    if [[ "$OVERWRITE" != "yes" ]]; then
-        echo "Aborting creation of $COMPOSE_UP_SCRIPT."
-        exit 1
-    fi
+
+if [ ! -f "$COMPOSE_UP_SCRIPT" ]; then
+    echo "#!/bin/bash" | sudo tee "$COMPOSE_UP_SCRIPT"
+    echo "sudo docker compose -f $DOCKER_CORE_PATH/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs --profile finance up -d" | sudo tee -a "$COMPOSE_UP_SCRIPT"
 fi
-echo "#!/bin/bash" | sudo tee "$COMPOSE_UP_SCRIPT"
-echo "sudo docker compose -f $DOCKER_CORE_PATH/docker-compose-$(hostname).yml --profile all --profile core --profile media --profile downloads --profile arrs --profile dbs --profile finance up -d" | sudo tee -a "$COMPOSE_UP_SCRIPT"
 # Make the script executable
 sudo chmod +x "$COMPOSE_UP_SCRIPT"
 
@@ -394,30 +385,30 @@ PUBLIC_IP=$(curl -s checkip.amazonaws.com)
 
 sudo systemctl enable ufw
 
-echo "================================================================================"
-echo "================================================================================"
+echo -e "\e[1;32m================================================================================\e[0m"
+echo -e "\e[1;32m================================================================================\e[0m"
 echo ""
-echo "All setup tasks have been successfully completed,"
-echo "SSH port: $SSH_PORT"
-echo "\e[1;32mssh apps@$PUBLIC_IP -p $SSH_PORT\e[0m"
+echo -e "\e[1;32mAll setup tasks have been successfully completed,\e[0m"
+echo -e "\e[1;32mSSH port: $SSH_PORT\e[0m"
+echo -e "\e[1;32mssh apps@$PUBLIC_IP -p $SSH_PORT\e[0m"
 echo ""
-echo "Set variables in $DOCKER_CORE_PATH/.env file"
-echo "Comment/uncomment docker-compose-$(hostname).yml"
-echo "Verify or/and set secrets files in $DOCKER_CORE_PATH/secrets"
-echo "\e[1;32mThe most important is the Cloudflare API token: $DOCKER_CORE_PATH/secrets/cf_dns_api_token. This token is critical because it allows the script to manage DNS records for your domain on Cloudflare. It is used to automatically configure DNS settings required for services like Traefik to function properly. Ensure that the token has the necessary permissions (Zone:DNS:Edit and Zone:Zone:Read) for your domain.\e[0m"
+echo -e "\e[1;32mSet variables in $DOCKER_CORE_PATH/.env file\e[0m"
+echo -e "\e[1;32mComment/uncomment docker-compose-$(hostname).yml\e[0m"
+echo -e "\e[1;32mVerify or/and set secrets files in $DOCKER_CORE_PATH/secrets\e[0m"
+echo -e "\e[1;32mThe most important is the Cloudflare API token: $DOCKER_CORE_PATH/secrets/cf_dns_api_token. This token is critical because it allows the script to manage DNS records for your domain on Cloudflare. It is used to automatically configure DNS settings required for services like Traefik to function properly. Ensure that the token has the necessary permissions (Zone:DNS:Edit and Zone:Zone:Read) for your domain.\e[0m"
 echo ""
-echo "Create an API token in your Cloudflare account with the following permissions:"
-echo "Refer to Cloudflare's documentation for guidance: https://developers.cloudflare.com/api/tokens/create/"
-echo "- Zone:DNS:Edit for your domain $PUBLIC_DOMAIN"
-echo "- Zone:Zone:Read for your domain $PUBLIC_DOMAIN"
+echo -e "\e[1;32mCreate an API token in your Cloudflare account with the following permissions:\e[0m"
+echo -e "\e[1;32mRefer to Cloudflare's documentation for guidance: https://developers.cloudflare.com/api/tokens/create/\e[0m"
+echo -e "\e[1;32m- Zone:DNS:Edit for your domain $PUBLIC_DOMAIN\e[0m"
+echo -e "\e[1;32m- Zone:Zone:Read for your domain $PUBLIC_DOMAIN\e[0m"
 echo ""
 # This command starts the Docker containers defined in the compose file
-echo "execute the following command to start the containers:"
-echo "sudo ./$COMPOSE_UP_SCRIPT"
-echo "to start the containers"
+echo -e "\e[1;32mExecute the following command to start the containers:\e[0m"
+echo -e "\e[1;32msudo ./$COMPOSE_UP_SCRIPT\e[0m"
+echo -e "\e[1;32mto start the containers\e[0m"
 echo ""
-echo "============================================================================================================================================================="
-echo "============================================================================================================================================================="
+echo -e "\e[1;32m=============================================================================================================================================================\e[0m"
+echo -e "\e[1;32m=============================================================================================================================================================\e[0m"
 
 
 # Prompt the user to restart the SSH service to apply the changes
