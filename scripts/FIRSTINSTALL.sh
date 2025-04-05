@@ -364,13 +364,13 @@ UMAMI_ADMIN_PASSWORD=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16)
 echo "$UMAMI_ADMIN_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/umami_admin_password"
 
 # Define the COMPOSE_UP_SCRIPT variable
-COMPOSE_UP_SCRIPT="$DOCKER_CORE_PATH/compose-up.sh"
+COMPOSE_UP_SCRIPT="$DOCKER_CORE_PATH/scripts/compose-up.sh"
 
 if [ -f "$COMPOSE_UP_SCRIPT" ]; then
     # Backup the existing file
     BACKUP_FILE="${COMPOSE_UP_SCRIPT}.bak.$(date +%Y%m%d%H%M%S)"
-    sudo cp "$COMPOSE_UP_SCRIPT" "$BACKUP_FILE"
-    echo "Existing $COMPOSE_UP_SCRIPT file backed up as $BACKUP_FILE."
+    sudo mv "$COMPOSE_UP_SCRIPT" "$BACKUP_FILE"
+    echo "Existing $COMPOSE_UP_SCRIPT backed up as $BACKUP_FILE."
 fi
 
 if [ ! -f "$COMPOSE_UP_SCRIPT" ]; then
@@ -404,7 +404,7 @@ echo -e "\e[1;32m- Zone:Zone:Read for your domain $PUBLIC_DOMAIN\e[0m"
 echo ""
 # This command starts the Docker containers defined in the compose file
 echo -e "\e[1;32mExecute the following command to start the containers:\e[0m"
-echo -e "\e[1;32msudo ./$COMPOSE_UP_SCRIPT\e[0m"
+echo -e "\e[1;32msudo .$COMPOSE_UP_SCRIPT\e[0m"
 echo -e "\e[1;32mto start the containers\e[0m"
 echo ""
 echo -e "\e[1;32m=============================================================================================================================================================\e[0m"
