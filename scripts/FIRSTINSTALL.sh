@@ -29,9 +29,9 @@ if id "apps" &>/dev/null; then
 else
     if sudo adduser apps; then
         sudo adduser apps sudo
-        echo "User 'apps' created and added to the 'sudo' group successfully."
+        echo "\e[1;32mUser 'apps' created and added to the 'sudo' group successfully.\e[0m"
     else
-        echo "Failed to create user 'apps'."
+        echo "\e[1;31mFailed to create user 'apps'\e[0m"
         exit 1
     fi
 fi
@@ -80,7 +80,7 @@ sudo sed -i "s/127.0.1.1.*/127.0.1.1\t$NEW_HOSTNAME/" /etc/hosts
 # Apply the changes
 sudo hostnamectl set-hostname "$NEW_HOSTNAME"
 # Verify the changes
-echo "The hostname has been changed to: $(hostname)"
+echo "\e[1;32mThe hostname has been changed to: $(hostname)\e[0m"
 
 
 ############################################
@@ -95,7 +95,7 @@ sudo ufw status verbose # This should show the rules we just added
 # This is necessary for Tailscale to work properly
 # Validate SSH_PORT is a valid integer within the range 1-65535
 if ! [[ "$SSH_PORT" =~ ^[0-9]+$ ]] || [ "$SSH_PORT" -lt 1 ] || [ "$SSH_PORT" -gt 65535 ]; then
-    echo "Error: SSH_PORT must be a valid integer between 1 and 65535."
+    echo "\e[1;31mError: SSH_PORT must be a valid integer between 1 and 65535\e[0m"
     exit 1
 fi
 
@@ -152,7 +152,7 @@ sudo ufw allow 853/tcp
 # Display the current firewall rules for review
 sudo ufw show added
 while true; do
-    read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
+    read -p "\e[1;32mAre you sure you want to enable the firewall with the above rules? (yes/no): \e[0m" CONFIRM
     CONFIRM=$(echo "$CONFIRM" | tr '[:upper:]' '[:lower:]')
     if [[ "$CONFIRM" == "yes" || "$CONFIRM" == "no" ]]; then
         break
@@ -161,10 +161,6 @@ while true; do
     fi
 done
 sudo ufw status verbose # This should show the rules we just added
-# Enable the firewall if the user confirms
-
-# Prompt the user for confirmation before enabling the firewall
-read -p "Are you sure you want to enable the firewall with the above rules? (yes/no): " CONFIRM
 
 #######################################
 ########## Secure SSH Access ##########
@@ -205,8 +201,8 @@ fi
 
 # Check if the destination folder is empty
 if [ "$(ls -A $DOCKER_CORE_PATH 2>/dev/null)" ]; then
-    echo "Error: The destination folder $DOCKER_CORE_PATH must be empty."
-    echo "Please remove any existing files or folders in $DOCKER_CORE_PATH before proceeding."
+    echo "\e[1;31mError: The destination folder $DOCKER_CORE_PATH must be empty\e[0m"
+    echo "\e[1;31mPlease remove any existing files or folders in $DOCKER_CORE_PATH before proceeding\e[0m"
     exit 1
 else
     echo "The destination folder $DOCKER_CORE_PATH is empty. Proceeding with the script."
@@ -214,18 +210,18 @@ fi
 
 # Clone the repository into the specified folder
 if ! ping -c 1 github.com &> /dev/null; then
-    echo "Error: Unable to reach GitHub. Please check your internet connection."
+    echo "\e[1;31mError: Unable to reach GitHub. Please check your internet connection\e[0m"
     exit 1
 else
-    echo "GitHub is reachable. Proceeding with the script."
+    echo "\e[1;32mGitHub is reachable. Proceeding with the script\e[0m"
 fi
 
 # Clone the DockerCore repository to set up the necessary Docker configurations and services.
 # This repository contains pre-configured Docker Compose files and other resources required for the server setup.
-if sudo git clone --depth 1 --branch main https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
-    echo "The repository has been successfully cloned into the directory: $DOCKER_CORE_PATH"
+if sudo git clone https://github.com/Hades2323/DockerCore.git "$DOCKER_CORE_PATH"; then
+    echo "\e[1;32mThe repository has been successfully cloned into the directory: $DOCKER_CORE_PATH\e[0m"
 else
-    echo "Error: Failed to clone the repository into $DOCKER_CORE_PATH from https://github.com/Hades2323/DockerCore.git. Please check your internet connection or verify the repository URL is valid and accessible."
+    echo "\e[1;31mError: Failed to clone the repository into $DOCKER_CORE_PATH from https://github.com/Hades2323/DockerCore.git. Please check your internet connection or verify the repository URL is valid and accessible\e[0m"
     exit 1
 fi
 
@@ -256,24 +252,24 @@ sudo chmod 600 "$DOCKER_CORE_PATH/appdata/traefik3/acme/acme.json"
 if [ -f "$DOCKER_CORE_PATH/docker-compose-vps01.yml" ]; then
     sudo mv "$DOCKER_CORE_PATH/docker-compose-vps01.yml" "$DOCKER_CORE_PATH/docker-compose-$(hostname).yml"
 else
-    echo "Warning: File $DOCKER_CORE_PATH/docker-compose-vps01.yml does not exist."
+    echo "\e[1;31mWarning: File $DOCKER_CORE_PATH/docker-compose-vps01.yml does not exist\e[0m"
 fi
 
 if [ -d "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" ]; then
     sudo mv "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" "$DOCKER_CORE_PATH/appdata/traefik3/rules/$(hostname)"
 else
-    echo "Warning: Directory $DOCKER_CORE_PATH/appdata/traefik3/rules/vps01 does not exist."
+    echo "\e[1;31mWarning: Directory $DOCKER_CORE_PATH/appdata/traefik3/rules/vps01 does not exist\e[0m"
 fi
 
 if [ -d "$DOCKER_CORE_PATH/logs/vps01" ]; then
     sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"
 else
-    echo "Warning: Directory $DOCKER_CORE_PATH/logs/vps01 does not exist."
+    echo "\e[1;31mWarning: Directory $DOCKER_CORE_PATH/logs/vps01 does not exist\e[0m"
 fi
 
 # Ask and validate the principal public domain name before inserting it into the .env file
 while true; do
-    read -p "Enter the principal public domain name: " PUBLIC_DOMAIN
+    read -p "\e[1;32mEnter the principal public domain name: \e[m0" PUBLIC_DOMAIN
     if [[ "$PUBLIC_DOMAIN" =~ ^[a-zA-Z0-9][-a-zA-Z0-9]{0,62}(\.[a-zA-Z]{2,})+$ ]]; then
         break
     else
@@ -287,7 +283,7 @@ sudo sed -i "s/^DOMAINNAME_00=.*/DOMAINNAME_00=$PUBLIC_DOMAIN/" "$DOCKER_CORE_PA
 if [ -d "$DOCKER_CORE_PATH/compose/vps01" ]; then
     sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"
 else
-    echo "Warning: Directory $DOCKER_CORE_PATH/compose/vps01 does not exist."
+    echo "\e[1;31mWarning: Directory $DOCKER_CORE_PATH/compose/vps01 does not exist\e[0m"
 fi
 
 # Mattermost default UID and GID is 2000
@@ -319,26 +315,26 @@ sudo systemctl start fail2ban
 sudo mkdir -p /mnt/apps /mnt/multimedia /mnt/download /mnt/config /mnt/backup /mnt/log /mnt/books /mnt/fotovideo
 
 # Create the secret for traefik basic auth
-echo -e "Create user and password for traefik basic auth: "
+echo -e "\e[1;32mCreate user and password for traefik basic auth: \e[0m"
 read -p "Enter username: " HTTP_USERNAME
 read -sp "Enter password: " HTTP_PASSWORD
 echo
 sudo htpasswd -cBb "$DOCKER_CORE_PATH/secrets/basic_auth_credentials" "$HTTP_USERNAME" "$HTTP_PASSWORD"
 
 # Create the secret for root mariadb user
-echo -e "Create root mariadb user password: "
+echo -e "\e[1;32mCreate root mariadb user password: \e[0m"
 read -sp "Enter password: " MARIADB_ROOT_PASSWORD
 echo
 echo "$MARIADB_ROOT_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/mysql_root_password"
 
 # Create the secret for postgres user
-echo -e "Create postgres user password: "
+echo -e "\e[1;32mCreate postgres user password: \e[0m"
 read -sp "Enter password: " POSTGRES_ROOT_PASSWORD
 echo
 echo "$POSTGRES_ROOT_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/postgres_root_password"
 
 # Create the secret for vnc password
-echo -e "Create vnc password: "
+echo -e "\e[1;32mCreate vnc password: \e[0m"
 read -sp "Enter password: " VNC_PASSWORD
 echo
 echo "$VNC_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/vnc_password"
@@ -378,7 +374,7 @@ echo "$UMAMI_ADMIN_PASSWORD" | sudo tee "$DOCKER_CORE_PATH/secrets/umami_admin_p
 # Check if DOCKER_CORE_PATH is not /opt/docker/core
 if [ "$DOCKER_CORE_PATH" != "/opt/docker/core" ]; then
 if [ -f "$COMPOSE_UP_SCRIPT" ]; then
-    read -p "The file $COMPOSE_UP_SCRIPT already exists. Do you want to overwrite it? (yes/no): " OVERWRITE
+    read -p "The file $COMPOSE_UP_SCRIPT already exists. Do you want to overwrite it? (\e[1;32myes\e[0m/no): " OVERWRITE
     OVERWRITE=$(echo "$OVERWRITE" | tr '[:upper:]' '[:lower:]')
     if [[ "$OVERWRITE" != "yes" ]]; then
         echo "Aborting creation of $COMPOSE_UP_SCRIPT."
@@ -389,7 +385,7 @@ if [ -f "$COMPOSE_UP_SCRIPT" ]; then
     sudo cp "$COMPOSE_UP_SCRIPT" "$BACKUP_FILE"
     echo "Existing file backed up as $BACKUP_FILE."
 fi
-    read -p "The file $COMPOSE_UP_SCRIPT already exists. Do you want to overwrite it? (yes/no): " OVERWRITE
+    read -p "The file $COMPOSE_UP_SCRIPT already exists. Do you want to overwrite it? (\e[1;32myes\e[0m/no): " OVERWRITE
     OVERWRITE=$(echo "$OVERWRITE" | tr '[:upper:]' '[:lower:]')
     if [[ "$OVERWRITE" != "yes" ]]; then
         echo "Aborting creation of $COMPOSE_UP_SCRIPT."
@@ -411,12 +407,12 @@ echo "==========================================================================
 echo ""
 echo "All setup tasks have been successfully completed,"
 echo "SSH port: $SSH_PORT"
-echo "ssh apps@$PUBLIC_IP -p $SSH_PORT"
+echo "\e[1;32mssh apps@$PUBLIC_IP -p $SSH_PORT\e[0m"
 echo ""
 echo "Set variables in $DOCKER_CORE_PATH/.env file"
 echo "Comment/uncomment docker-compose-$(hostname).yml"
 echo "Verify or/and set secrets files in $DOCKER_CORE_PATH/secrets"
-echo "The most important is the Cloudflare API token: $DOCKER_CORE_PATH/secrets/cf_dns_api_token. This token is critical because it allows the script to manage DNS records for your domain on Cloudflare. It is used to automatically configure DNS settings required for services like Traefik to function properly. Ensure that the token has the necessary permissions (Zone:DNS:Edit and Zone:Zone:Read) for your domain."
+echo "\e[1;32mThe most important is the Cloudflare API token: $DOCKER_CORE_PATH/secrets/cf_dns_api_token. This token is critical because it allows the script to manage DNS records for your domain on Cloudflare. It is used to automatically configure DNS settings required for services like Traefik to function properly. Ensure that the token has the necessary permissions (Zone:DNS:Edit and Zone:Zone:Read) for your domain.\e[0m"
 echo ""
 echo "Create an API token in your Cloudflare account with the following permissions:"
 echo "Refer to Cloudflare's documentation for guidance: https://developers.cloudflare.com/api/tokens/create/"
