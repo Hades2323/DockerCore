@@ -243,29 +243,31 @@ sudo setfacl -Rm u:apps:rwx "$DOCKER_CORE_PATH"
 sudo setfacl -Rdm g:docker:rwx "$DOCKER_CORE_PATH"
 sudo setfacl -Rm g:docker:rwx "$DOCKER_CORE_PATH"
 
-sudo mv "$DOCKER_CORE_PATH/docker-compose-vps01.yml" "$DOCKER_CORE_PATH/docker-compose-$(hostname).yml"
-sudo mv "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" "$DOCKER_CORE_PATH/appdata/traefik3/rules/$(hostname)"
-sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"
-sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"
+if ! sudo mv "$DOCKER_CORE_PATH/docker-compose-vps01.yml" "$DOCKER_CORE_PATH/docker-compose-$(hostname).yml"; then
+    echo "\e[1;31mError: Failed to move docker-compose-vps01.yml. Please check if the cloned repository is correct.\e[0m"
+    exit 1
+fi
+
+if ! sudo mv "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" "$DOCKER_CORE_PATH/appdata/traefik3/rules/$(hostname)"; then
+    echo "\e[1;31mError: Failed to move traefik3 rules directory. Please check if the cloned repository is correct.\e[0m"
+    exit 1
+fi
+
+if ! sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"; then
+    echo "\e[1;31mError: Failed to move logs directory. Please check if the cloned repository is correct.\e[0m"
+    exit 1
+fi
+
+if ! sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"; then
+    echo "\e[1;31mError: Failed to move compose directory. Please check if the cloned repository is correct.\e[0m"
+    exit 1
+fi
+
 sudo chmod 600 "$DOCKER_CORE_PATH/appdata/traefik3/acme/acme.json"
 
-if [ -f "$DOCKER_CORE_PATH/docker-compose-vps01.yml" ]; then
-    sudo mv "$DOCKER_CORE_PATH/docker-compose-vps01.yml" "$DOCKER_CORE_PATH/docker-compose-$(hostname).yml"
-else
-    echo "\e[1;31mWarning: File $DOCKER_CORE_PATH/docker-compose-vps01.yml does not exist\e[0m"
-fi
-
-if [ -d "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" ]; then
-    sudo mv "$DOCKER_CORE_PATH/appdata/traefik3/rules/vps01" "$DOCKER_CORE_PATH/appdata/traefik3/rules/$(hostname)"
-else
-    echo "\e[1;31mWarning: Directory $DOCKER_CORE_PATH/appdata/traefik3/rules/vps01 does not exist\e[0m"
-fi
-
-if [ -d "$DOCKER_CORE_PATH/logs/vps01" ]; then
-    sudo mv "$DOCKER_CORE_PATH/logs/vps01" "$DOCKER_CORE_PATH/logs/$(hostname)"
-else
-    echo "\e[1;31mWarning: Directory $DOCKER_CORE_PATH/logs/vps01 does not exist\e[0m"
-fi
+# Mattermost default UID and GID is 2000
+# Set the ownership of the mattermost folder to the 'apps' user and group
+sudo chown -R 2000:2000 "$DOCKER_CORE_PATH/appdata/mattermost"
 
 # Ask and validate the principal public domain name before inserting it into the .env file
 while true; do
@@ -279,16 +281,6 @@ done
 
 # Update the .env file with the public domain name
 sudo sed -i "s/^DOMAINNAME_00=.*/DOMAINNAME_00=$PUBLIC_DOMAIN/" "$DOCKER_CORE_PATH/.env"
-
-if [ -d "$DOCKER_CORE_PATH/compose/vps01" ]; then
-    sudo mv "$DOCKER_CORE_PATH/compose/vps01" "$DOCKER_CORE_PATH/compose/$(hostname)"
-else
-    echo "\e[1;31mWarning: Directory $DOCKER_CORE_PATH/compose/vps01 does not exist\e[0m"
-fi
-
-# Mattermost default UID and GID is 2000
-# Set the ownership of the mattermost folder to the 'apps' user and group
-sudo chown -R 2000:2000 "$DOCKER_CORE_PATH/appdata/mattermost"
 
 # Get the UID and GID of the 'apps' user and group
 APPS_UID=$(id -u apps)
