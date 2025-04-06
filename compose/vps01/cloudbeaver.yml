@@ -12,6 +12,7 @@ services:
         - 8978:8978
       links:
         - postgres
+        - mariadb
       volumes:
         - $DOCKERDIR/appdata/cloudbeaver/workspace:/opt/cloudbeaver/workspace
         #- $DOCKERDIR/appdata/cloudbeaver/config:/etc/cloudbeaver

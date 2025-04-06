@@ -7,7 +7,8 @@ services:
     networks:
       socket_proxy:
         ipv4_address: 10.10.10.230 # You can specify a static IP
-      default:
+      #t3_proxy:
+      #default:
     security_opt:
       - no-new-privileges:true
     restart: unless-stopped

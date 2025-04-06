@@ -9,10 +9,13 @@ services:
     # profiles: ["core", "all"]
     networks:
       - t3_proxy
+      - socket_proxy
+    ports:
+      - 59985:80
     environment:
         # This is required to allow vaultwarden to verify the TLS certificate!
       - DOMAIN=https://vaultwarden.$DOMAINNAME_00
-      - ADMIN_TOKEN: /run/secrets/vaultwarden_admin_token
+      - ADMIN_TOKEN=/run/secrets/vaultwarden_admin_token
     volumes:
       - $DOCKERDIR/appdata/vaultwarden/data:/data
     secrets:
@@ -21,7 +24,7 @@ services:
     - "traefik.enable=true"
     ## HTTP Routers
     - "traefik.http.routers.vaultwarden-rtr.entrypoints=websecure"
-    - "traefik.http.routers.vaultwarden-rtr.rule=Host(`vaultwarden.$DOMAINNAME_HS`)"
+    - "traefik.http.routers.vaultwarden-rtr.rule=Host(`vaultwarden.$DOMAINNAME_00`)"
     # - "traefik.http.routers.vaultwarden-rtr.tls=true"
     # Middlewares
     # - "traefik.http.routers.vaultwarden-rtr.middlewares=chain-no-auth@file" # For No Authentication

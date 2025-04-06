@@ -403,6 +403,8 @@ echo ""
 # This command starts the Docker containers defined in the compose file
 echo -e "\e[1;32mExecute the following command to start the containers:\e[0m"
 echo -e "sudo bash $COMPOSE_UP_SCRIPT"
+echo -e "or"
+echo -e "sudo docker compose -f $DOCKER_CORE_PATH/docker-compose-$(hostname).yml --profile all up -d"
 echo ""
 echo -e "\e[1;32m================================================================================\e[0m"
 echo -e "================================================================================="

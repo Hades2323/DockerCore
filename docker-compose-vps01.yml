@@ -69,11 +69,11 @@ secrets:
     file: $SECRETSDIR/nextcloud_admin_password # put admin password in this file
   nextcloud_admin_user:
     file: $SECRETSDIR/nextcloud_admin_user # put admin username in this file
-  nextcloud_apostgres_db:
+  nextcloud_postgres_db:
     file: $SECRETSDIR/nextcloud_postgres_db # put postgresql db name in this file
-  nextcloud_apostgres_password:
+  nextcloud_postgres_password:
     file: $SECRETSDIR/nextcloud_postgres_password # put postgresql password in this file
-  nextcloud_apostgres_user:
+  nextcloud_postgres_user:
     file: $SECRETSDIR/nextcloud_postgres_user # put postgresql username in this file
   odoo_postgres_password:
     file: $SECRETSDIR/odoo_postgres_password # put postgresql password in this file
