@@ -1,0 +1,45 @@
+services:
+  watchtower:
+    container_name: watchtower
+    build:
+      context: ./
+      dockerfile: dockerfiles/Dockerfile.dev-self-contained
+    volumes:
+      #- /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - socket_proxy
+      - t3_proxy
+    ports:
+      - 8080:8080
+    command: --interval 10 --http-api-metrics --http-api-token demotoken --debug watchtower_prometheus watchtower_grafana parent child
+  watchtower_prometheus:
+    container_name: prometheus
+    image: prom/prometheus
+    volumes:
+      - $DOCKERDIR/appdata/watchtower/prometheus/:/etc/prometheus/
+      - $DOCKERDIR/appdata/watchtower/prometheus:/prometheus/
+    ports:
+      - 9090:9090
+  watchtower_grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports:
+      - 3000:3000
+    environment:
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+    volumes:
+      - $DOCKERDIR/appdata/watchtower/grafana:/var/lib/grafana
+      - $DOCKERDIR/appdata/watchtower/grafana:/etc/grafana/provisioning
+  parent:
+    image: nginx
+    container_name: parent
+  child:
+    image: nginx:alpine
+    labels:
+      com.centurylinklabs.watchtower.depends-on: parent
+    container_name: child
+
+volumes:
+  watchtower_prometheus: {}
+  watchtower_grafana: {}

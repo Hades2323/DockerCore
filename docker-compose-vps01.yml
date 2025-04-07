@@ -202,6 +202,9 @@ include:
   #- compose/$HOSTNAME/filebrowser.yml
   #- compose/$HOSTNAME/pwpush.yml
   #- compose/$HOSTNAME/rustdesk.yml
+  #- compose/$HOSTNAME/mail-to-telegram.yml
+  #- compose/$HOSTNAME/kolab.yml
+  #- compose/$HOSTNAME/watchtower.yml
 
   ################################
   ######## NETWORK ########
@@ -249,6 +252,9 @@ include:
   #- compose/$HOSTNAME/plex-meta-manager.yml
   #- compose/$HOSTNAME/plex-image-cleanup.yml
   #- compose/$HOSTNAME/jellyfin-vue.yml
+  #- compose/$HOSTNAME/photoprism.yml
+  #- compose/$HOSTNAME/immich.yml
+  #- compose/$HOSTNAME/navidrome.yml
 
   ################################
   ######## BOOKS AND NEWS ########

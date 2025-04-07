@@ -1,0 +1,33 @@
+services:
+  navidrome:
+    image: deluan/navidrome:latest
+    container_name: navidrome  
+    networks:
+      - t3_proxy
+      - socket_proxy
+    ports:
+      - "4533:4533"
+    restart: unless-stopped
+    user: $PuID:$PgID # should be owner of volumes
+    environment:
+      # Optional: put your config options customization here. Examples:
+      # ND_LOGLEVEL: debug
+    volumes:
+      - "$DOCKERDIR/appdata/navidrome/data:/data"
+      - "$MEDIA_DIR/music:/music:ro"
+    labels:
+      - "traefik.enable=true"
+      # HTTP Routers
+      - "traefik.http.routers.navidrome-rtr.entrypoints=websecure"
+      - "traefik.http.routers.navidrome-rtr.rule=Host(`navidrome.$DOMAINNAME_00`)"
+      # Middlewares
+      # - "traefik.http.routers.navidrome-rtr.middlewares=chain-no-auth@file" # For No Authentication
+      - "traefik.http.routers.navidrome-rtr.middlewares=chain-basic-auth@file" # For Basic HTTP Authentication
+      # - "traefik.http.routers.navidrome-rtr.middlewares=chain-no-auth-no-crowdsec@file"
+      # - "traefik.http.routers.navidrome-rtr.middlewares=chain-no-auth-webos@file"
+      # - "traefik.http.routers.navidrome-rtr.middlewares=chain-oauth-external@file"
+      # - "traefik.http.routers.navidrome-rtr.middlewares=chain-oauth@file" # For Google OAuth
+      # - "traefik.http.routers.navidrome-rtr.middlewares=chain-authelia@file" # For Authelia Authentication
+      # HTTP Services
+      - "traefik.http.routers.navidrome-rtr.service=navidrome-svc"
+      - "traefik.http.services.navidrome-svc.loadbalancer.server.port=4533"
