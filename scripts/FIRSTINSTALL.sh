@@ -101,8 +101,9 @@ fi
 
 # Allow SSH connections
 sudo ufw allow ${SSH_PORT}/tcp
-# Removed duplicate rule to avoid redundancy
+# Allow private connections
 sudo ufw allow from 172.16.0.0/12
+sudo ufw allow from 10.0.0.0/8
 sudo ufw allow from 192.168.0.0/16
 # Allow connections from the Tailscale network (default range)
 sudo ufw allow from 100.64.0.0/10
